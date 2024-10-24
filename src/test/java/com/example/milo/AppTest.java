@@ -1,9 +1,9 @@
 package com.example.milo;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.example.logic.OpcUaClientExample;
+import org.testng.annotations.Test;
 
 /**
  * Unit test for simple App.
@@ -24,9 +24,9 @@ public class AppTest
     /**
      * @return the suite of tests being tested
      */
-    public static OpcUaClientExample.Test suite()
+    public static Test suite()
     {
-        return new TestSuite( AppTest.class );
+        return (Test) new TestSuite( AppTest.class );
     }
 
     /**
