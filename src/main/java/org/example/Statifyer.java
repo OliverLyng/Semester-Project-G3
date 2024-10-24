@@ -2,43 +2,25 @@ package org.example;
 
 public class Statifyer {
     public STATES showState(int state){
-        switch (state)
-        {
-            case 0:
-                return STATES.DEACTIVATED;
-            case 1:
-                return STATES.CLEARING;
-            case 2:
-                return STATES.STOPPED;
-            case 3:
-                return STATES.STARTING;
-            case 4:
-                return STATES.IDLE;
-            case 5:
-                return STATES.SUSPENDED;
-            case 6:
-                return STATES.EXECUTE;
-            case 7:
-                return STATES.STOPPING;
-            case 8:
-                return STATES.ABORTING;
-            case 9:
-                return STATES.ABORTED;
-            case 10:
-                return STATES.HOLDING;
-            case 11:
-                return STATES.HELD;
-            case 15:
-                return STATES.RESETTING;
-            case 16:
-                return STATES.COMPLETING;
-            case 17:
-                return STATES.COMPLETE;
-            case 18:
-                return STATES.DEACTIVATING;
-            case 19:
-                return STATES.ACTIVATING;
-            default: return null;
-        }
+        return switch (state) {
+            case 0 -> STATES.DEACTIVATED;
+            case 1 -> STATES.CLEARING;
+            case 2 -> STATES.STOPPED;
+            case 3 -> STATES.STARTING;
+            case 4 -> STATES.IDLE;
+            case 5 -> STATES.SUSPENDED;
+            case 6 -> STATES.EXECUTE;
+            case 7 -> STATES.STOPPING;
+            case 8 -> STATES.ABORTING;
+            case 9 -> STATES.ABORTED;
+            case 10 -> STATES.HOLDING;
+            case 11 -> STATES.HELD;
+            case 15 -> STATES.RESETTING;
+            case 16 -> STATES.COMPLETING;
+            case 17 -> STATES.COMPLETE;
+            case 18 -> STATES.DEACTIVATING;
+            case 19 -> STATES.ACTIVATING;
+            default -> null;
+        };
     }
 }
