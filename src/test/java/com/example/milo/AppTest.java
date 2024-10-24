@@ -3,7 +3,7 @@ package com.example.milo;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.example.OpcUaClientExample;
+import org.example.logic.OpcUaClientExample;
 
 /**
  * Unit test for simple App.
