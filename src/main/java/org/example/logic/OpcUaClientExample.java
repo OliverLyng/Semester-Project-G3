@@ -8,8 +8,23 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
 import java.util.concurrent.CompletableFuture;
+import org.example.utils.Nodes;
 
 public class OpcUaClientExample {
+
+    Nodes node;
+    UaClient client;
+
+    public void start(){
+        client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));
+        client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
+    }
+
+    public void execute(){
+
+    }
+
+
     public static void main(String[] args) throws Exception {
         String endpointUrl = "opc.tcp://localhost:4840";  // Change to your server's URL
 
@@ -24,15 +39,17 @@ public class OpcUaClientExample {
 
         System.out.println("Client connected to server: " + endpointUrl);
 
-        // Do other OPC-UA operations here, like reading/writing nodes
 
 
-        //Nodes
-        NodeId stateCurrent = new NodeId(6, "::Program:Cube.Status.StateCurrent");
-        NodeId cntrlCmd = new NodeId(6,"::Program:Cube.Command.CntrlCmd");
-        NodeId cmdChange = new NodeId(6,"::Program:Cube.Command.CmdChangeRequest");
 
-        //Print values
+
+
+
+
+
+
+        //Examples
+        /*
         UaVariableNode node = client.getAddressSpace().getVariableNode(stateCurrent);
         System.out.println(node.getValue());
 
@@ -41,6 +58,8 @@ public class OpcUaClientExample {
         client.writeValue(cmdChange,DataValue.valueOnly(new Variant(true)));
 
         System.out.println(node.getValue());
+
+         */
 
     }
 }
