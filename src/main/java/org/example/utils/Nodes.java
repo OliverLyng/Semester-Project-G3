@@ -13,6 +13,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class Nodes {
 
+    UaClient client;
+
     //Status
     public NodeId stateCurrent = new NodeId(6, "::Program:Cube.Status.StateCurrent");
     public NodeId machSpeedState = new NodeId(6, "::Program:Cube.Status.MachSpeed");

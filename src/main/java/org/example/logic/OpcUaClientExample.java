@@ -3,11 +3,14 @@ package org.example.logic;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 import org.example.utils.Nodes;
 
 public class OpcUaClientExample {
@@ -15,14 +18,43 @@ public class OpcUaClientExample {
     Nodes node;
     UaClient client;
 
+    private static Variant producedNode = client.readValue(0,null,node.produced).get().getValue();
+
+
+
     public void start(){
         client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
     }
 
-    public void execute(){
+    public synchronized void execute(OpcUaClient client) throws Exception, InterruptedException{
+
+        //switches speed of the product
+        client.writeValue(node.machSpeed,DataValue.valueOnly(new Variant(settings.x)));
+
+        //chooses the type of beer
+        client.writeValue(node.parameter1,DataValue.valueOnly(new Variant(settings.x)));
+
+        //chooses the amount of beer
+        client.writeValue(node.parameter2,DataValue.valueOnly(new Variant(settings.x)));
+
+        //starts the production
+        client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(2)));
+        client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
+
+
+        while(client.readValue(0,null,node.produced).get().getValue()!=settings.x){
+            wait();
+        }
+
+        client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));
+        client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
 
     }
+
+
+
+
 
 
     public static void main(String[] args) throws Exception {
@@ -38,6 +70,7 @@ public class OpcUaClientExample {
         connectFuture.get();
 
         System.out.println("Client connected to server: " + endpointUrl);
+
 
 
 
