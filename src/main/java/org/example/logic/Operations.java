@@ -9,6 +9,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.example.data.Settings;
 import org.example.utils.Nodes;
 
 public class Operations {
@@ -16,6 +17,7 @@ public class Operations {
     Nodes node;
 
     Settings settings;
+    Operations operator;
 
     public Operations(){
         this.node = new Nodes();
@@ -26,29 +28,41 @@ public class Operations {
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
     }
 
-    public void execute(OpcUaClient client,UaVariableNode variableNode) throws Exception{
+    public void stop(UaClient client) throws Exception{
 
+        while(true){
+            UaVariableNode stateNode = client.getAddressSpace().getVariableNode(node.stateCurrent);
+            String var = stateNode.getValue().getValue().getValue().toString();
+            System.out.println(var);
+            //System.out.println("Running outside of if statement");
+            //System.out.println(variableNode.getValue().getValue());
+            if(var.equals("17")){
+                System.out.println("Production finished");
+                break;
 
-        variableNode = client.getAddressSpace().getVariableNode(node.produced);
+            }
+        }
 
+        client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(3)));
+        UaVariableNode stateNode = client.getAddressSpace().getVariableNode(node.stateCurrent);
+        String var = stateNode.getValue().getValue().getValue().toString();
+        System.out.println(var);
+        client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
+    }
+
+    public void execute(OpcUaClient client) throws Exception{
+
+        //resets the machine
+
+        client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));
+        client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
 
         //starts the production
         client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(2)));
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
 
-        while(true){
-            System.out.println("Running outside of if statement");
 
-            if(variableNode.getValue().getValue().equals(1)){
-                System.out.println("Running");
-                break;
-            }
-        }
 
-        System.out.println("Out of loop");
-        //resets the machine
-        client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));
-        client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
 
     }
 
@@ -93,11 +107,15 @@ public class Operations {
         Operations operator = new Operations();
         operator.node = new Nodes();
         UaVariableNode uaVariableNode = client.getAddressSpace().getVariableNode(operator.node.produced);
+        UaVariableNode stateNode = client.getAddressSpace().getVariableNode(operator.node.stateCurrent);
+        System.out.println(uaVariableNode.getValue());
 
+        operator.loadSettings(client);
 
         operator.start(client);
-        operator.loadSettings(client);
-        operator.execute(client,uaVariableNode);
+
+        operator.execute(client);
+        operator.stop(client);
 
 
         NodeId produced = new NodeId(6,"::Program:product.produced");
