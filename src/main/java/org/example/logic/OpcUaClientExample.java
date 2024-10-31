@@ -18,16 +18,15 @@ public class OpcUaClientExample {
     Nodes node;
     UaClient client;
 
-    private static Variant producedNode = client.readValue(0,null,node.produced).get().getValue();
-
-
 
     public void start(){
         client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
     }
 
-    public synchronized void execute(OpcUaClient client) throws Exception, InterruptedException{
+    public void execute(OpcUaClient client) throws Exception{
+
+        boolean isDone = false;
 
         //switches speed of the product
         client.writeValue(node.machSpeed,DataValue.valueOnly(new Variant(settings.x)));
@@ -42,11 +41,14 @@ public class OpcUaClientExample {
         client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(2)));
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
 
+        while(isDone==false){
 
-        while(client.readValue(0,null,node.produced).get().getValue()!=settings.x){
-            wait();
+            if(client.readValue(0,null,node.produced).get().getValue()==settings.x){
+                isDone=true;
+            }
         }
 
+        //resets the machine
         client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
 
