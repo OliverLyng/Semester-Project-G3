@@ -24,7 +24,7 @@ public class OpcUaClientExample {
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
     }
 
-    public void execute(OpcUaClient client) throws Exception{
+    public void execute(OpcUaClient client,Settings settings) throws Exception{
 
         boolean isDone = false;
 
