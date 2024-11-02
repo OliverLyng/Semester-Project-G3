@@ -24,31 +24,61 @@ public class Operations {
     public void start(UaClient client) throws Exception{
         client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
+        System.out.println("Completed the reset");
     }
 
     public void execute(OpcUaClient client,UaVariableNode variableNode) throws Exception{
-
-
-        variableNode = client.getAddressSpace().getVariableNode(node.produced);
-
+        
+        variableNode = client.getAddressSpace().getVariableNode(node.stateCurrent);
 
         //starts the production
         client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(2)));
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
+        
+        System.out.println("starting production");
 
-        while(true){
-            System.out.println("Running outside of if statement");
+        
+        while (true) {
+            try {
+                // Check if stateCurrent has reached the 'Complete' state
+                DataValue stateValue = variableNode.readValue();
+                int stateCurrent = (int) stateValue.getValue().getValue();
+                System.out.println("Current state: " + stateCurrent); // Debugging output
 
-            if(variableNode.getValue().getValue().equals(1)){
-                System.out.println("Running");
+                // Check if stateCurrent has reached the 'Complete' state (17)
+                if (stateCurrent == 17) {
+                    System.out.println("Production Complete (stateCurrent == 17)");
+                    break;
+                }
+
+                // Add a short delay to avoid overwhelming the server
+                Thread.sleep(500);  // Poll every 500 milliseconds
+            } catch (Exception e) {
+                System.err.println("Error reading stateCurrent: " + e.getMessage());
+                e.printStackTrace();
                 break;
             }
         }
 
-        System.out.println("Out of loop");
+        /*
+        //Olivers kode
+         while(true){
+            
+            //System.out.println("Running outside of if statement");
+            if(variableNode.getValue().getValue().equals(17)){
+                //System.out.println("Running");
+                //it never prints running????
+                break;
+            }
+        }
+         */
+    
+
+        //System.out.println("Out of loop");
         //resets the machine
         client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
+        System.out.println("done with execute");
 
     }
 
@@ -59,15 +89,19 @@ public class Operations {
 
         //chooses the type of beer
         client.writeValue(node.parameter1,DataValue.valueOnly(new Variant(settings.getBeerType())));
+        
 
         //chooses the amount of beer
         client.writeValue(node.parameter2,DataValue.valueOnly(new Variant(settings.getBeerAmount())));
+        
 
         //switches speed of the product
         client.writeValue(node.machSpeed,DataValue.valueOnly(new Variant(settings.getMachSpeed())));
+        
 
 
         client.writeValue(node.parameter0,DataValue.valueOnly(new Variant(2)));
+        
 
     }
 
@@ -87,7 +121,7 @@ public class Operations {
         // Block until connection is established
         connectFuture.get();
 
-        System.out.println("Client connected to server: " + endpointUrl);
+        //System.out.println("Client connected to server: " + endpointUrl);
 
 
         Operations operator = new Operations();
@@ -100,9 +134,9 @@ public class Operations {
         operator.execute(client,uaVariableNode);
 
 
-        NodeId produced = new NodeId(6,"::Program:product.produced");
+        //NodeId produced = new NodeId(6,"::Program:product.produced");
 
-        System.out.println(client.readValue(0,null,produced));
+        //System.out.println(client.readValue(0,null,produced));
 
 
 
