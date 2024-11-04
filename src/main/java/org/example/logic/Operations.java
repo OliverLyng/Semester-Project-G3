@@ -6,18 +6,26 @@ import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-
-import java.util.concurrent.CompletableFuture;
-
+import org.eclipse.milo.opcua.stack.core.types.enumerated.TimestampsToReturn;
 import org.example.data.Settings;
 import org.example.utils.Nodes;
+import org.example.utils.STATES;
+import org.example.utils.Statifyer;
+import java.util.concurrent.CompletableFuture;
+
+import static java.lang.Thread.sleep;
 
 public class Operations {
+    // Create a subscription at a desired publishing interval (e.g., 1000 ms)
+
+    Statifyer statifyer = new Statifyer();
 
     Nodes node;
 
     Settings settings;
-    Operations operator;
+    int batchValue = 1;
+    Variant batchId;
+
 
     public Operations(){
         this.node = new Nodes();
@@ -28,26 +36,29 @@ public class Operations {
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
     }
 
-    public void stop(UaClient client) throws Exception{
+    public void stop(UaClient client) throws Exception {
 
-        while(true){
+        while (true) {
+            System.out.println("CHECK "+client.readValue(0, TimestampsToReturn.Both,new NodeId(6,"::Program:Cube.Status.StateCurrent")));
             UaVariableNode stateNode = client.getAddressSpace().getVariableNode(node.stateCurrent);
-            String var = stateNode.getValue().getValue().getValue().toString();
-            System.out.println(var);
-            //System.out.println("Running outside of if statement");
-            //System.out.println(variableNode.getValue().getValue());
-            if(var.equals("17")){
+            int stateInt = (int)(stateNode.getValue().getValue().getValue());
+            STATES state = statifyer.showState(stateInt);
+            System.out.println(state);
+            sleep(1000);
+
+            if (client.readValue(0, TimestampsToReturn.Both,new NodeId(6,"::Program:Cube.Status.StateCurrent")).isDone()) {
                 System.out.println("Production finished");
                 break;
-
             }
         }
 
         client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(3)));
-        UaVariableNode stateNode = client.getAddressSpace().getVariableNode(node.stateCurrent);
-        String var = stateNode.getValue().getValue().getValue().toString();
-        System.out.println(var);
         client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));
+        UaVariableNode stateNode = client.getAddressSpace().getVariableNode(node.stateCurrent);
+        int stateInt = (int)(stateNode.getValue().getValue().getValue());
+        STATES state = statifyer.showState(stateInt);
+        System.out.println(state);
+
     }
 
     public void execute(OpcUaClient client) throws Exception{
@@ -70,6 +81,8 @@ public class Operations {
     public void loadSettings(OpcUaClient client) throws Exception{
 
         settings = new Settings(0,1,300);
+        batchValue += 1;
+        batchId = new Variant(batchValue);
 
         //chooses the type of beer
         client.writeValue(node.parameter1,DataValue.valueOnly(new Variant(settings.getBeerType())));
@@ -80,8 +93,8 @@ public class Operations {
         //switches speed of the product
         client.writeValue(node.machSpeed,DataValue.valueOnly(new Variant(settings.getMachSpeed())));
 
-
-        client.writeValue(node.parameter0,DataValue.valueOnly(new Variant(2)));
+        //batch number
+        client.writeValue(node.parameter0,DataValue.valueOnly(batchId));
 
     }
 
@@ -90,10 +103,13 @@ public class Operations {
 
 
     public static void main(String[] args) throws Exception {
+
         String endpointUrl = "opc.tcp://localhost:4840";  // Change to your server's URL
 
         // Build OPC-UA client
         OpcUaClient client = OpcUaClient.create(endpointUrl);
+
+
 
         // Connect to the server
         CompletableFuture<UaClient> connectFuture = client.connect();
@@ -110,11 +126,15 @@ public class Operations {
         UaVariableNode stateNode = client.getAddressSpace().getVariableNode(operator.node.stateCurrent);
         System.out.println(uaVariableNode.getValue());
 
-        operator.loadSettings(client);
 
+        operator.loadSettings(client);
+        //sleep(1000);
         operator.start(client);
+        //sleep(1000);
 
         operator.execute(client);
+        //sleep(1000);
+
         operator.stop(client);
 
 
