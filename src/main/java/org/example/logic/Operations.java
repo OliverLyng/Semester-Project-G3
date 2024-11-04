@@ -26,6 +26,11 @@ public class Operations {
 
         // Adds a short delay for the server to process the commands
         Thread.sleep(500);
+
+        //Verify that the state have been reset
+        UaVariableNode stateNode = client.getAddressSpace().getVariableNode(node.stateCurrent);
+        System.out.println("The state after resetting is: " + stateNode.readValue().getValue().getValue());
+        
     }
 
     public void loadSettings(OpcUaClient client) throws Exception {
@@ -61,7 +66,7 @@ public class Operations {
 
             // Check if production target is met
             if (beerproducedValue == 1) {
-                System.out.println("Production complete");
+                System.out.println("Production is now complete");
                 break;
             }
 
