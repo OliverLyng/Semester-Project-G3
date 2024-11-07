@@ -1,7 +1,7 @@
 package org.example.utils;
 
 public class Statifyer {
-    public STATES showState(int state){
+    public static STATES showState(int state){
         return switch (state) {
             case 0 -> STATES.DEACTIVATED;
             case 1 -> STATES.CLEARING;

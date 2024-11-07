@@ -1,6 +1,6 @@
 package org.example.utils;
 
-enum STATES {
+public enum STATES {
     DEACTIVATED,
     CLEARING,
     STOPPED,
