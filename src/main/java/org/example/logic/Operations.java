@@ -20,6 +20,12 @@ public class Operations {
         this.node = new Nodes();
     }
 
+
+    public void checkStatus() {
+        //Only allows the production to start if the state is currently 17 
+        //If not then the "NonoperationalStateHandler" class will handle it 
+    }
+
     public void start(UaClient client) throws Exception {
         client.writeValue(node.cntrlCmd, DataValue.valueOnly(new Variant(1)));
         client.writeValue(node.cmdChange, DataValue.valueOnly(new Variant(true)));
@@ -86,6 +92,9 @@ public class Operations {
         System.out.println("The current state after resetting is: " + currentState);
 
     }
+
+
+
 
     public static void main(String[] args) throws Exception {
         String endpointUrl = "opc.tcp://localhost:4840"; // Change to your server's URL
