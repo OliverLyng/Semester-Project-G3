@@ -24,6 +24,12 @@
           <version>3.8.1</version>
           <scope>test</scope>
       </dependency>
+    <!-- Add SLF4J binding, for example, slf4j-simple for simple logging -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.36</version>
+    </dependency>
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>

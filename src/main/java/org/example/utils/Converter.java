@@ -1,6 +1,6 @@
 package org.example.utils;
 
-public class Statifyer {
+public class Converter {
     public static STATES showState(int state){
         return switch (state) {
             case 0 -> STATES.DEACTIVATED;
@@ -20,6 +20,17 @@ public class Statifyer {
             case 17 -> STATES.COMPLETE;
             case 18 -> STATES.DEACTIVATING;
             case 19 -> STATES.ACTIVATING;
+            default -> null;
+        };
+    }
+    public static BEERTYPE showBeerType(int state) {
+        return switch (state) {
+            case 0 -> BEERTYPE.PILSNER;
+            case 1 -> BEERTYPE.WHEAT;
+            case 2 -> BEERTYPE.IPA;
+            case 3 -> BEERTYPE.STOUT;
+            case 4 -> BEERTYPE.ALE;
+            case 5 -> BEERTYPE.ALCOHOL_FREE;
             default -> null;
         };
     }
