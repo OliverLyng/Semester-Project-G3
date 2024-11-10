@@ -2,7 +2,7 @@ package com.example.milo;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.example.logic.OpcUaClientExample;
+//import org.example.logic.OpcUaClientExample;
 import org.testng.annotations.Test;
 
 /**
