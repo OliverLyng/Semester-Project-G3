@@ -24,11 +24,17 @@
           <version>3.8.1</version>
           <scope>test</scope>
       </dependency>
-    <!-- Add SLF4J binding, for example, slf4j-simple for simple logging -->
+    <!-- SLF4J API -->
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <artifactId>slf4j-api</artifactId>
       <version>1.7.36</version>
+    </dependency>
+    <!-- Logback Classic Implementation -->
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.11</version>
     </dependency>
     <dependency>
       <groupId>org.testng</groupId>
