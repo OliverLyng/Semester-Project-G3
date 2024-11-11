@@ -51,7 +51,7 @@ public class Status {
 
             }
             case EXECUTE -> {
-                uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.machSpeedState);
+                uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.statusMachSpeedState);
                 System.out.println("Speed: " + uaVariableNode.readValue().getValue().getValue().toString());
 
             }

@@ -1,8 +1,10 @@
 package org.example.logic;
 
+
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
@@ -16,7 +18,7 @@ import org.example.utils.Converter;
 import org.example.utils.Nodes;
 import org.example.utils.STATES;
 
-import java.util.Objects;
+
 
 public class Operations {
 
@@ -29,6 +31,7 @@ public class Operations {
     UaVariableNode variableNodeState;
 
     static String endpointUrl = "opc.tcp://localhost:4840";
+    boolean needsReset = false;
 
 
     private void reset(UaClient client) throws Exception {
@@ -77,9 +80,9 @@ public class Operations {
 
 
         //chooses the type of beer
-        client.writeValue(Nodes.parameter1, DataValue.valueOnly(new Variant(settings.getBeerType())));
+        client.writeValue(Nodes.cmdBeerType, DataValue.valueOnly(new Variant(settings.getBeerType())));
 
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.parameter1);
+        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.cmdBeerType);
 
         Object obj = uaVariableNode.readValue().getValue().getValue();
         float f = (Float) obj;
@@ -88,55 +91,63 @@ public class Operations {
         logger.info("Beertype is  {}", Converter.showBeerType(roundedValue));
 
         //chooses the amount of beer
-        client.writeValue(Nodes.parameter2, DataValue.valueOnly(new Variant(settings.getBeerAmount())));
+        client.writeValue(Nodes.cmdAmountOfBeer, DataValue.valueOnly(new Variant(settings.getBeerAmount())));
 
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.parameter2);
+        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.cmdAmountOfBeer);
         System.out.println("Amount: " + uaVariableNode.readValue().getValue().getValue().toString());
         logger.info("Amount is  {}", uaVariableNode.readValue().getValue().getValue().toString());
 
         //switches speed of the product
-        client.writeValue(Nodes.machSpeed, DataValue.valueOnly(new Variant(settings.getMachSpeed())));
+        client.writeValue(Nodes.cmdMachSpeed, DataValue.valueOnly(new Variant(settings.getMachSpeed())));
 
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.machSpeedState);
+        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.cmdMachSpeed);
         System.out.println("Speed: " + uaVariableNode.readValue().getValue().getValue().toString());
         logger.info("Speed: {}", uaVariableNode.readValue().getValue().getValue().toString());
-        //Batch Id
-        client.writeValue(Nodes.parameter0, DataValue.valueOnly(new Variant(20)));
 
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.statusParameter0);
+        //Batch Id
+        client.writeValue(Nodes.cmdBatchId, DataValue.valueOnly(new Variant(20)));
+        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.cmdBatchId);
         System.out.println("Batch ID: " + uaVariableNode.readValue().getValue().getValue().toString());
         logger.info("Batch ID: {}", uaVariableNode.readValue().getValue().getValue().toString());
     }
 
-    private void printStatus() throws Exception {
-        System.out.println();
-        logger.info("");
+
+    private void handleStartStatus(STATES state) throws UaException {
+        if (state.equals(STATES.STOPPED)) {
+            needsReset = true;
+        }
     }
 
-    private void checkStatus(OpcUaClient client) throws Exception {
+    private void handleStoppedStatus(STATES state) {
+        if (state.equals(STATES.STOPPED)) {
+
+        }
+    }
+    private STATES checkStatus(OpcUaClient client) throws Exception {
         variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
         UaVariableNode uaVariableNode;
-        STATES states = Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString()));
-        switch (Objects.requireNonNull(states)) {
-            case ABORTED -> {
-                System.out.println("Machine production was aborted");
-                logger.error("Machine production was aborted");
-            }
-
-
-            case COMPLETE, STOPPED -> {
-                System.out.println("Production complete. Resetting...");
-                logger.info("Production complete. Resetting...");
-                operator.reset(client);
-            }
-            case EXECUTE -> {
-                uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.machSpeedState);
-                System.out.println("Speed: " + uaVariableNode.readValue().getValue().getValue().toString());
-                logger.info("Speed: {}", uaVariableNode.readValue().getValue().getValue().toString());
-            }
+        STATES state = Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString()));
+        return state;
+//        switch (Objects.requireNonNull(states)) {
+//            case ABORTED -> {
+//                System.out.println("Machine production was aborted");
+//                logger.error("Machine production was aborted");
+//            }
+//
+//
+//            case COMPLETE, STOPPED -> {
+//                System.out.println("Production complete. Resetting...");
+//                logger.info("Production complete. Resetting...");
+//                operator.reset(client);
+//            }
+//            case EXECUTE -> {
+//                uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.machSpeedState);
+//                System.out.println("Speed: " + uaVariableNode.readValue().getValue().getValue().toString());
+//                logger.info("Speed: {}", uaVariableNode.readValue().getValue().getValue().toString());
+//            }
 //            case IDLE ->
 //                    operator.execute(client);
-        }
+//        }
     }
 
     public static void main(String[] args) throws Exception {
@@ -166,13 +177,18 @@ public class Operations {
 
             //operator.reset(client);
             operator.loadSettings(client);
+            STATES states = operator.checkStatus(client);
+            operator.handleStartStatus(states);
+            if (operator.needsReset) {
+                operator.reset(client);
+            }
             operator.execute(client);
 
 
             DataValue dataValue = nodeRepository.readNodeValue(Nodes.stateCurrent);
             System.out.println("Current value: " + dataValue);
             logger.info("Current value: {}", dataValue);
-            nodeRepository.writeNodeValue(Nodes.machSpeedState, new Variant(300));
+            nodeRepository.writeNodeValue(Nodes.cmdMachSpeed, new Variant(300));
 
             // Keep the application running to continue receiving updates
             Thread.sleep(Long.MAX_VALUE);
