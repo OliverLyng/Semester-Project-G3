@@ -2,6 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', action: function () {
+Route::get('/', function () {
     return view('home');
-});
+})->name('dashboard'); // Home route as Dashboard
+
+Route::view('/scheduling', 'scheduling')->name('scheduling');
+Route::view('/current_batch', 'current_batch')->name('current_batch');
+Route::view('/inventory', 'inventory')->name('inventory');
+Route::view('/history', 'history')->name('history');
+Route::view('/reports', 'reports')->name('reports');
