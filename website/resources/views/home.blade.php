@@ -42,12 +42,6 @@
     <div class="content">
         <!-- Content here -->
     </div>
-
-    <div>
-        <button type="button" id="startprod">Start Production Test</button>
-        <script src="startProd.js"></script>
-    </div>
-
 </body>
 
 </html>
