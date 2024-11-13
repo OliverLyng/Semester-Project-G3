@@ -1,3 +1,5 @@
+<?php
+
 // app/Http/Controllers/BrewingController.php
 
 namespace App\Http\Controllers;
