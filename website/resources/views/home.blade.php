@@ -51,8 +51,8 @@
         <!-- Control Buttons -->
         <div class="button-group">
             <button id="startButton" class="start-button">Start Brewing</button>
-            <button class="pause-button">Pause Brewing</button>
-            <button class="stop-button">Stop Brewing</button>
+            <button id="pauseButton" class="pause-button">Pause Brewing</button>
+            <button id="stopButton" class="stop-button">Stop Brewing</button>
             <button class="report-button">Generate Report</button>
             <button class="history-button">View Batch History</button>
         </div>
@@ -77,18 +77,41 @@
     <!-- JavaScript -->
     <script>
     document.getElementById("startButton").addEventListener("click", function () {
-    fetch("http://localhost:8080/api/start", {
-        method: "POST"
-    })
-    .then(response => {
-        console.log("Response Status:", response.status);  // Log status code for debugging
-        if (response.ok) {
-            return response.text();
-        }
-        throw new Error("Failed to start brewing process.");
-    })
+    fetch("http://localhost:8080/api/start", { method: "POST" })
+    .then(response => response.ok ? response.text() : Promise.reject("Failed to start brewing"))
     .then(data => {
-        console.log("Success:", data);
+        console.log(data);
+        document.getElementById("statusMessage").innerText = data;
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("statusMessage").innerText = "There was an error starting the brewing process.";
+    });
+    });
+
+    document.getElementById("pauseButton").addEventListener("click", function () {
+    fetch("http://localhost:8080/api/pause", { method: "POST" })
+    .then(response => response.ok ? response.text() : Promise.reject("Failed to pause brewing"))
+    .then(data => {
+        console.log(data);
+        document.getElementById("statusMessage").innerText = data;
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("statusMessage").innerText = "There was an error pausing the brewing process.";
+    });
+    });
+
+    document.getElementById("stopButton").addEventListener("click", function () {
+    fetch("http://localhost:8080/api/stop", { method: "POST" })
+    .then(response => response.ok ? response.text() : Promise.reject("Failed to stop brewing"))
+    .then(data => {
+        console.log(data);
+        document.getElementById("statusMessage").innerText = data;
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("statusMessage").innerText = "There was an error stopping the brewing process.";
     });
     });
     </script>
