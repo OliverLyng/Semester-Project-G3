@@ -14,7 +14,7 @@
         </div>
         <h1 class="title">Home Brew Hub</h1>
     </div>
-    
+
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="menu-item">
@@ -50,7 +50,7 @@
         
         <!-- Control Buttons -->
         <div class="button-group">
-            <button class="start-button">Start Brewing</button>
+            <button id="startButton" class="start-button">Start Brewing</button>
             <button class="pause-button">Pause Brewing</button>
             <button class="stop-button">Stop Brewing</button>
             <button class="report-button">Generate Report</button>
@@ -73,5 +73,29 @@
             </div>
         </div>
     </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.getElementById("startButton").addEventListener("click", function () {
+            fetch("http://localhost:8080/api/start", {
+                method: "POST"
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                }
+                throw new Error("Failed to start brewing process.");
+            })
+            .then(data => {
+                // Display the response message from the server
+                console.log(data);
+                alert(data); // Optional: Show an alert with the server's response
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("There was an error starting the brewing process.");
+            });
+        });
+    </script>
 </body>
 </html>
