@@ -76,26 +76,21 @@
 
     <!-- JavaScript -->
     <script>
-        document.getElementById("startButton").addEventListener("click", function () {
-            fetch("http://localhost:8080/api/start", {
-                method: "POST"
-            })
-            .then(response => {
-                if (response.ok) {
-                    return response.text();
-                }
-                throw new Error("Failed to start brewing process.");
-            })
-            .then(data => {
-                // Display the response message from the server
-                console.log(data);
-                alert(data); // Optional: Show an alert with the server's response
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("There was an error starting the brewing process.");
-            });
-        });
+    document.getElementById("startButton").addEventListener("click", function () {
+    fetch("http://localhost:8080/api/start", {
+        method: "POST"
+    })
+    .then(response => {
+        console.log("Response Status:", response.status);  // Log status code for debugging
+        if (response.ok) {
+            return response.text();
+        }
+        throw new Error("Failed to start brewing process.");
+    })
+    .then(data => {
+        console.log("Success:", data);
+    });
+    });
     </script>
 </body>
 </html>

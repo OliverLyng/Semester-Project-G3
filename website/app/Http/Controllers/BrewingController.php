@@ -1,5 +1,7 @@
 <?php
 
+// app/Http/Controllers/BrewingController.php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
