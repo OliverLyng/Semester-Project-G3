@@ -1,4 +1,4 @@
-// app/Http/Controllers/BrewingController.php
+<?php
 
 namespace App\Http\Controllers;
 
