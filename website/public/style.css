@@ -26,9 +26,15 @@ body {
 
 .logo-container {
     position: absolute;
-    left: 20px;
-    width: 60px;
-    height: 60px;
+    left: 10px;
+    width: 110px;
+    height: 110px;
+}
+
+/* Logo Image */
+.logo {
+    width: 100%; /* Keeps the logo responsive to container size */
+    height: auto;
 }
 
 .logo {
@@ -113,12 +119,60 @@ button {
     border-radius: 5px;
     color: #fff;
     cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .start-button { background-color: #4CAF50; }
 .pause-button { background-color: #FFA500; }
 .stop-button { background-color: #FF5722; }
 .report-button, .history-button { background-color: #333; }
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:active {
+    transform: scale(0.95); /* Shrinks button on click */
+}
+
+/* Glow Effect */
+.start-button:hover { box-shadow: 0 0 8px rgba(76, 175, 80, 0.6); }
+.pause-button:hover { box-shadow: 0 0 8px rgba(255, 165, 0, 0.6); }
+.stop-button:hover { box-shadow: 0 0 8px rgba(255, 87, 34, 0.6); }
+.report-button:hover, .history-button:hover { box-shadow: 0 0 8px rgba(51, 51, 51, 0.6); }
+
+/* Loading State */
+button.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Status Message */
+.status-message {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Status Message Styling */
+#brewingStatus {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: #333;
+}
+
+.status-icon {
+    margin-right: 8px;
+    font-size: 24px; /* Icon size */
+    color: #4CAF50; /* Default color */
+}
+
+/* Optional: Change icon color based on status */
+.status-started .status-icon { color: #4CAF50; } /* Green for started */
+.status-paused .status-icon { color: #FFA500; } /* Orange for paused */
+.status-stopped .status-icon { color: #FF5722; } /* Red for stopped */
+
 
 /* Dashboard Sections */
 .dashboard-section {
