@@ -17,6 +17,7 @@ import org.example.utils.Nodes;
 import org.example.utils.STATES;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class Operations {
 
@@ -26,9 +27,15 @@ public class Operations {
 
     Settings settings;
 
+    static String endpointUrl = "opc.tcp://localhost:4840";
+
+    NodeRepository nodeRepository;
+
     UaVariableNode variableNodeState;
 
-    static String endpointUrl = "opc.tcp://localhost:4840";
+    public Operations(NodeRepository nodeRepository) {
+        this.nodeRepository = nodeRepository;
+    }
 
 
     private void reset(UaClient client) throws Exception {
@@ -45,28 +52,40 @@ public class Operations {
         client.writeValue(Nodes.cmdChange, DataValue.valueOnly(new Variant(true)));
     }
 
+    public void tryNodeRepo() throws ExecutionException, InterruptedException {
+        System.out.println("Also here");
+        System.out.println("And Here"+nodeRepository.readNodeValue(Nodes.stateCurrent));
+    }
+
     public void execute(OpcUaClient client) throws Exception {
 
-        variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
-        //starts the production
-        client.writeValue(Nodes.cntrlCmd, DataValue.valueOnly(new Variant(2)));
-        client.writeValue(Nodes.cmdChange, DataValue.valueOnly(new Variant(true)));
-        STATES states = Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString()));
-        STATES currentState = states;
-        System.out.println(currentState);
-        logger.info("State: {}",currentState);
-        while (states != STATES.COMPLETE) {
-            while (currentState == states) {
-                states = Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString()));
-            }
-            System.out.println(states);
-            logger.info("State: {}",states);
-            currentState = states;
+        System.out.println("Execute Program");
+        //System.out.println(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString());
 
-            //operator.checkStatus(client);
-        }
-        System.out.println("Beers produced: " + client.getAddressSpace().getVariableNode(Nodes.produced).readValue().getValue().getValue().toString());
-        logger.info("Beers produced: : {}", client.getAddressSpace().getVariableNode(Nodes.produced).readValue().getValue().getValue().toString());
+        nodeRepository.writeNodeValue(Nodes.cmdChange, new Variant(2));
+        nodeRepository.writeNodeValue(Nodes.cmdChange, new Variant(true));
+
+        //System.out.println(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString());
+//        variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
+//        //starts the production
+//        client.writeValue(Nodes.cntrlCmd, DataValue.valueOnly(new Variant(2)));
+//        client.writeValue(Nodes.cmdChange, DataValue.valueOnly(new Variant(true)));
+//        STATES states = Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString()));
+//        STATES currentState = states;
+//        System.out.println(currentState);
+//        logger.info("State: {}",currentState);
+//        while (states != STATES.COMPLETE) {
+//            while (currentState == states) {
+//                states = Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString()));
+//            }
+//            System.out.println(states);
+//            logger.info("State: {}",states);
+//            currentState = states;
+//
+//            //operator.checkStatus(client);
+//        }
+//        System.out.println("Beers produced: " + client.getAddressSpace().getVariableNode(Nodes.produced).readValue().getValue().getValue().toString());
+//        logger.info("Beers produced: : {}", client.getAddressSpace().getVariableNode(Nodes.produced).readValue().getValue().getValue().toString());
     }
 
 
@@ -113,6 +132,7 @@ public class Operations {
         logger.info("");
     }
 
+
     private void checkStatus(OpcUaClient client) throws Exception {
         variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
         UaVariableNode uaVariableNode;
@@ -141,55 +161,63 @@ public class Operations {
 
     public static void main(String[] args) throws Exception {
 
-
-        OPCUAServerConnection serverConnection = null;
-        OpcUaClient client = null;
-        try {
-            serverConnection = new OPCUAServerConnection(endpointUrl);
-            client = serverConnection.connect();
-            SubscriptionService subscriptionService = new SubscriptionService(client);
-            NodeRepository nodeRepository = new NodeRepository(client);
-
-            // Subscribe to changes on status
-            subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
-                System.out.println("New value received for Current Stat2e: " + dataValue);
-                logger.info("New value received for Current State: {}", dataValue);
-            });
-            // Subscribe to changes on produced items
-            subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
-                System.out.println("New value received for Produced Items: " + dataValue);
-                logger.info("New value received for Produced Items: {}", dataValue);
-            });
+        OPCUAServerConnection serverConnection = OPCUAServerConnection.getInstance(endpointUrl);
+        NodeRepository nodeRepository = new NodeRepository();
+        serverConnection.setNodeRepository(nodeRepository);
+        operator = new Operations(nodeRepository);
+        OpcUaClient client = serverConnection.connect();
+        operator.tryNodeRepo();
+        operator.loadSettings(client);
+        operator.execute(client);
+        System.out.println("Made it here");
 
 
-            operator = new Operations();
+        //nodeRepository.setClient(client);
+//        try {
+//
+//
+//            SubscriptionService subscriptionService = new SubscriptionService(client);
+//
+//            // Subscribe to changes on status
+//            subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
+//                System.out.println("New value received for Current Stat2e: " + dataValue);
+//                logger.info("New value received for Current State: {}", dataValue);
+//            });
+//            // Subscribe to changes on produced items
+//            subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
+//                System.out.println("New value received for Produced Items: " + dataValue);
+//                logger.info("New value received for Produced Items: {}", dataValue);
+//            });
+
+
+
 
             //operator.reset(client);
-            operator.loadSettings(client);
-            operator.execute(client);
 
 
-            DataValue dataValue = nodeRepository.readNodeValue(Nodes.stateCurrent);
-            System.out.println("Current value: " + dataValue);
-            logger.info("Current value: {}", dataValue);
-            nodeRepository.writeNodeValue(Nodes.machSpeedState, new Variant(300));
+
+//
+//            DataValue dataValue = nodeRepository.readNodeValue(Nodes.stateCurrent);
+//            System.out.println("Current value: " + dataValue);
+//            logger.info("Current value: {}", dataValue);
+//            nodeRepository.writeNodeValue(Nodes.machSpeedState, new Variant(300));
 
             // Keep the application running to continue receiving updates
-            Thread.sleep(Long.MAX_VALUE);
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(String.valueOf(e));
-        } finally {
-            if (client != null) {
-                try {
-                    client.disconnect().get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    logger.error(String.valueOf(e));
-
-                }
-            }
-        }
+            //Thread.sleep(Long.MAX_VALUE);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            logger.error(String.valueOf(e));
+//        } finally {
+//            if (client != null) {
+//                try {
+//                    client.disconnect().get();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    logger.error(String.valueOf(e));
+//
+//                }
+//            }
+//        }
     }
 }
 

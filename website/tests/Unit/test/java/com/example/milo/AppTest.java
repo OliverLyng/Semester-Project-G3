@@ -1,4 +1,4 @@
-package com.example.milo;
+package test.java.com.example.milo;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
