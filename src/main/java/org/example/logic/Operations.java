@@ -208,31 +208,3 @@ public class Operations {
         }
     }
 }
-
-
-//
-//
-//        String endpointUrl = "opc.tcp://localhost:4840";  // Change to your server's URL
-//
-//        // Build OPC-UA client
-//        OpcUaClient client = OpcUaClient.create(endpointUrl);
-//
-//        // Connect to the server
-//        CompletableFuture<UaClient> connectFuture = client.connect();
-//
-//        // Block until connection is established
-//        connectFuture.get();
-//
-//        System.out.println("Client connected to server: " + endpointUrl);
-//        operator = new Operations();
-//
-//        operator.checkStatus(client);
-//        //operator.reset(client);
-//        operator.loadSettings(client);
-//        operator.execute(client);
-
-
-
-
-
-

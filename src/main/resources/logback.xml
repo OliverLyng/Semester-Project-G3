@@ -1,19 +1,20 @@
-<configuration>
+<configuration scan="true">
     <!-- Root Logger -->
     <root level="info">
-        <appender-ref ref="STDOUT" />
-        <appender-ref ref="FILE" />
+        <appender-ref ref="STDOUT" />       <!-- Text Console Appender -->
+        <appender-ref ref="FILE" />         <!-- Text File Appender -->
+        <appender-ref ref="JSON_CONSOLE" /> <!-- JSON Console Appender -->
+        <appender-ref ref="JSON_FILE" />    <!-- JSON File Appender -->
     </root>
 
-
-    <!-- Console Appender -->
+    <!-- Text Console Appender -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%date{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- File Appender -->
+    <!-- Text File Appender -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/beer.log</file>
         <append>true</append>
@@ -22,5 +23,22 @@
         </encoder>
     </appender>
 
+    <!-- JSON Console Appender -->
+    <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <customFields>{"appName":"BeerApp","environment":"development"}</customFields>
+        </encoder>
+    </appender>
 
+    <!-- JSON File Appender -->
+    <appender name="JSON_FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/beer.json</file>
+        <append>true</append>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeContext>true</includeContext>
+            <includeJsonStartEndMarkers>true</includeJsonStartEndMarkers>
+            <customFields>{"appName":"BeerApp","environment":"production"}</customFields>
+        </encoder>
+    </appender>
 </configuration>
+
