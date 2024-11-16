@@ -1,16 +1,6 @@
 package org.example.logic;
 
-import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.UaClient;
-import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
-import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
-import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.example.utils.Nodes;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public class Settings {
 
@@ -18,9 +8,9 @@ public class Settings {
 
     private float beerType;
     private float beerAmount;
-    private int machSpeed;
+    private float machSpeed;
 
-    public Settings(float beerType, float beerAmount, int machSpeed) {
+    public Settings(float beerType, float beerAmount, float machSpeed) {
         this.beerType = beerType;
         this.beerAmount = beerAmount;
         this.machSpeed = machSpeed;
@@ -42,7 +32,7 @@ public class Settings {
         this.beerAmount = beerAmount;
     }
 
-    public int getMachSpeed() {
+    public float getMachSpeed() {
         return machSpeed;
     }
 

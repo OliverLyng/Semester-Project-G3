@@ -9,6 +9,8 @@ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
 import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class OPCUAServerConnection {
     private static OPCUAServerConnection instance;
@@ -28,41 +30,58 @@ public class OPCUAServerConnection {
     }
 
     public OpcUaClient connect() throws Exception {
+        try {
 
-        if (client == null || !isConnected) {
-            if (client != null) {
-                disconnect();
+            if (client == null || !isConnected) {
+                if (client != null) {
+                    disconnect();
+                }
+
+                // Discover endpoints using the provided URL
+                List<EndpointDescription> endpoints = DiscoveryClient.getEndpoints(endpointUrl).get();
+
+                // Optionally filter for "No Security"
+                EndpointDescription selectedEndpoint = endpoints.stream()
+                        .filter(e -> e.getSecurityPolicyUri().equals("http://opcfoundation.org/UA/SecurityPolicy#None"))
+                        .findFirst()
+                        .orElseThrow(() -> new Exception("No 'No Security' endpoints found"));
+
+                // Update the endpoint URL to ensure it matches the local configuration
+                EndpointDescription updatedEndpoint = EndpointUtil.updateUrl(selectedEndpoint, "127.0.0.1", 4840);
+
+                // Configure the client
+                OpcUaClientConfig config = OpcUaClientConfig.builder()
+                        .setEndpoint(updatedEndpoint)
+                        .setApplicationUri("urn:example:client")
+                        .setIdentityProvider(new AnonymousProvider())
+                        .build();
+
+                // Create and connect the client
+                client = OpcUaClient.create(config);
+                client.connect().get();
+
+                isConnected = true;
             }
-
-            // Discover endpoints using the provided URL
-            List<EndpointDescription> endpoints = DiscoveryClient.getEndpoints(endpointUrl).get();
-
-            // Optionally filter for "No Security"
-            EndpointDescription selectedEndpoint = endpoints.stream()
-                    .filter(e -> e.getSecurityPolicyUri().equals("http://opcfoundation.org/UA/SecurityPolicy#None"))
-                    .findFirst()
-                    .orElseThrow(() -> new Exception("No 'No Security' endpoints found"));
-
-            // Update the endpoint URL to ensure it matches the local configuration
-            EndpointDescription updatedEndpoint = EndpointUtil.updateUrl(selectedEndpoint, "127.0.0.1", 4840);
-
-            // Configure the client
-            OpcUaClientConfig config = OpcUaClientConfig.builder()
-                    .setEndpoint(updatedEndpoint)
-                    .setApplicationUri("urn:example:client")
-                    .setIdentityProvider(new AnonymousProvider())
-                    .build();
-
-            // Create and connect the client
-            client = OpcUaClient.create(config);
-            client.connect().get();
-
-            isConnected = true;
+        } catch (Exception e) {
+            isConnected = false;
+            scheduleReconnect();  // schedule a reconnection attempt
+            throw e;  // rethrow exception to indicate initial connection failure
         }
         return client;
     }
 
-    public void disconnect() {
+    private void scheduleReconnect() {
+        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+            System.out.println("Attempting to reconnect...");
+            try {
+                connect();
+            } catch (Exception e) {
+                System.err.println("Reconnection attempt failed: " + e.getMessage());
+            }
+        },10, TimeUnit.SECONDS);
+    }
+
+        public void disconnect() {
         if (client != null && isConnected) {
             client.disconnect().join();
             isConnected = false;
