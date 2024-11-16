@@ -2,21 +2,16 @@ package org.example.logic;
 
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
-import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-
+import org.example.data.NodeRepository;
+import org.example.data.OPCUAServerConnection;
 import org.example.exceptions.EmptyInventoryException;
 import org.example.exceptions.MaintenanceException;
 import org.example.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.example.data.NodeRepository;
-import org.example.data.OPCUAServerConnection;
 
 import java.util.Objects;
 
@@ -163,7 +158,7 @@ public class Operations {
 
     public void loadSettings() throws Exception {
 
-        settings = new Settings(2.0f, 100.0f, 300.0f);
+        settings = new Settings(0.0f, 100.0f, 300.0f);
         UaVariableNode uaVariableNode;
 
 

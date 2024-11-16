@@ -946,3 +946,53 @@ java.net.SocketException: Connection reset
 2024-11-16 21:34:35.503 [main] INFO  org.example.logic.Operations - Defective: DataValue{value=Variant{value=0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762628755028848, javaDate=Sat Nov 16 21:34:35 CET 2024}, serverTime=DateTime{utcTime=133762628755019011, javaDate=Sat Nov 16 21:34:35 CET 2024}}
 2024-11-16 21:34:36.048 [milo-shared-thread-pool-2] INFO  org.example.logic.Operations - New value received for Current State: DataValue{value=Variant{value=17}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762628750378956, javaDate=Sat Nov 16 21:34:35 CET 2024}, serverTime=DateTime{utcTime=133762628750378956, javaDate=Sat Nov 16 21:34:35 CET 2024}}
 2024-11-16 21:34:36.050 [milo-shared-thread-pool-2] INFO  org.example.logic.Operations - New value received for Produced Items: DataValue{value=Variant{value=100}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762628750487433, javaDate=Sat Nov 16 21:34:35 CET 2024}, serverTime=DateTime{utcTime=133762628750487433, javaDate=Sat Nov 16 21:34:35 CET 2024}}
+2024-11-16 21:43:38.236 [main] INFO  org.example.logic.Operations - Starting Program
+2024-11-16 21:43:39.208 [main] INFO  o.e.m.opcua.sdk.client.OpcUaClient - Java version: 21.0.2
+2024-11-16 21:43:39.208 [main] INFO  o.e.m.opcua.sdk.client.OpcUaClient - Eclipse Milo OPC UA Stack version: 0.6.14
+2024-11-16 21:43:39.211 [main] INFO  o.e.m.opcua.sdk.client.OpcUaClient - Eclipse Milo OPC UA Client SDK version: 0.6.14
+2024-11-16 21:43:40.745 [milo-nonce-util-secure-random] INFO  o.e.m.o.stack.core.util.NonceUtil - SecureRandom seeded in 0ms.
+2024-11-16 21:43:40.890 [main] INFO  org.example.logic.Operations - Beertype is  IPA
+2024-11-16 21:43:40.910 [main] INFO  org.example.logic.Operations - Amount is  100.0
+2024-11-16 21:43:40.946 [main] INFO  org.example.logic.Operations - Speed: 300.0
+2024-11-16 21:43:40.969 [main] INFO  org.example.logic.Operations - Batch ID: 14.0
+2024-11-16 21:43:41.060 [main] INFO  org.example.logic.Operations - State: COMPLETE
+2024-11-16 21:43:41.063 [main] INFO  org.example.logic.Operations - Batch: DataValue{value=Variant{value=14.0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762634210623808, javaDate=Sat Nov 16 21:43:41 CET 2024}, serverTime=DateTime{utcTime=133762634210623808, javaDate=Sat Nov 16 21:43:41 CET 2024}}
+2024-11-16 21:43:41.066 [main] INFO  org.example.logic.Operations - BeerType: DataValue{value=Variant{value=2.0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762634210649053, javaDate=Sat Nov 16 21:43:41 CET 2024}, serverTime=DateTime{utcTime=133762634210649053, javaDate=Sat Nov 16 21:43:41 CET 2024}}
+2024-11-16 21:43:41.073 [main] INFO  org.example.logic.Operations - Total Produced: DataValue{value=Variant{value=100}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762634210729091, javaDate=Sat Nov 16 21:43:41 CET 2024}, serverTime=DateTime{utcTime=133762634210729091, javaDate=Sat Nov 16 21:43:41 CET 2024}}
+2024-11-16 21:43:41.084 [main] INFO  org.example.logic.Operations - Defective: DataValue{value=Variant{value=0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762634210839038, javaDate=Sat Nov 16 21:43:41 CET 2024}, serverTime=DateTime{utcTime=133762634210839038, javaDate=Sat Nov 16 21:43:41 CET 2024}}
+2024-11-16 21:43:41.847 [milo-shared-thread-pool-0] INFO  org.example.logic.Operations - New value received for Current State: DataValue{value=Variant{value=17}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762634208555852, javaDate=Sat Nov 16 21:43:40 CET 2024}, serverTime=DateTime{utcTime=133762634208555852, javaDate=Sat Nov 16 21:43:40 CET 2024}}
+2024-11-16 21:43:41.856 [milo-shared-thread-pool-0] INFO  org.example.logic.Operations - New value received for Produced Items: DataValue{value=Variant{value=100}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762634208658898, javaDate=Sat Nov 16 21:43:40 CET 2024}, serverTime=DateTime{utcTime=133762634208658898, javaDate=Sat Nov 16 21:43:40 CET 2024}}
+
+2024-11-16 21:47:49.004 [main] INFO  org.example.logic.Operations - Starting Program
+2024-11-16 21:47:51.988 [main] INFO  o.e.m.opcua.sdk.client.OpcUaClient - Java version: 21.0.2
+2024-11-16 21:47:51.989 [main] INFO  o.e.m.opcua.sdk.client.OpcUaClient - Eclipse Milo OPC UA Stack version: 0.6.14
+2024-11-16 21:47:51.994 [main] INFO  o.e.m.opcua.sdk.client.OpcUaClient - Eclipse Milo OPC UA Client SDK version: 0.6.14
+2024-11-16 21:47:55.212 [milo-nonce-util-secure-random] INFO  o.e.m.o.stack.core.util.NonceUtil - SecureRandom seeded in 0ms.
+2024-11-16 21:47:55.456 [main] INFO  org.example.logic.Operations - Beertype is  IPA
+2024-11-16 21:47:55.523 [main] INFO  org.example.logic.Operations - Amount is  100.0
+2024-11-16 21:47:55.545 [main] INFO  org.example.logic.Operations - Speed: 300.0
+2024-11-16 21:47:55.553 [main] INFO  org.example.logic.Operations - Batch ID: 14.0
+2024-11-16 21:47:55.639 [main] INFO  org.example.logic.Operations - State: COMPLETE
+2024-11-16 21:47:55.642 [main] INFO  org.example.logic.Operations - Batch: DataValue{value=Variant{value=14.0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762636756421171, javaDate=Sat Nov 16 21:47:55 CET 2024}, serverTime=DateTime{utcTime=133762636756421171, javaDate=Sat Nov 16 21:47:55 CET 2024}}
+2024-11-16 21:47:55.655 [main] INFO  org.example.logic.Operations - BeerType: DataValue{value=Variant{value=2.0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762636756541361, javaDate=Sat Nov 16 21:47:55 CET 2024}, serverTime=DateTime{utcTime=133762636756541361, javaDate=Sat Nov 16 21:47:55 CET 2024}}
+2024-11-16 21:47:55.741 [main] INFO  org.example.logic.Operations - Total Produced: DataValue{value=Variant{value=100}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762636757409072, javaDate=Sat Nov 16 21:47:55 CET 2024}, serverTime=DateTime{utcTime=133762636757409072, javaDate=Sat Nov 16 21:47:55 CET 2024}}
+2024-11-16 21:47:55.782 [main] INFO  org.example.logic.Operations - Defective: DataValue{value=Variant{value=0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762636757821357, javaDate=Sat Nov 16 21:47:55 CET 2024}, serverTime=DateTime{utcTime=133762636757821357, javaDate=Sat Nov 16 21:47:55 CET 2024}}
+2024-11-16 21:47:56.373 [milo-shared-thread-pool-0] INFO  org.example.logic.Operations - New value received for Current State: DataValue{value=Variant{value=17}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762636753824202, javaDate=Sat Nov 16 21:47:55 CET 2024}, serverTime=DateTime{utcTime=133762636753824202, javaDate=Sat Nov 16 21:47:55 CET 2024}}
+2024-11-16 21:47:56.386 [milo-shared-thread-pool-0] INFO  org.example.logic.Operations - New value received for Produced Items: DataValue{value=Variant{value=100}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762636753963864, javaDate=Sat Nov 16 21:47:55 CET 2024}, serverTime=DateTime{utcTime=133762636753963864, javaDate=Sat Nov 16 21:47:55 CET 2024}}
+
+2024-11-16 21:48:54.186 [main] INFO  org.example.logic.Operations - Starting Program
+2024-11-16 21:48:56.832 [main] INFO  o.e.m.opcua.sdk.client.OpcUaClient - Java version: 21.0.2
+2024-11-16 21:48:56.834 [main] INFO  o.e.m.opcua.sdk.client.OpcUaClient - Eclipse Milo OPC UA Stack version: 0.6.14
+2024-11-16 21:48:56.839 [main] INFO  o.e.m.opcua.sdk.client.OpcUaClient - Eclipse Milo OPC UA Client SDK version: 0.6.14
+2024-11-16 21:48:58.894 [milo-nonce-util-secure-random] INFO  o.e.m.o.stack.core.util.NonceUtil - SecureRandom seeded in 0ms.
+2024-11-16 21:48:58.996 [main] INFO  org.example.logic.Operations - Beertype is  PILSNER
+2024-11-16 21:48:59.008 [main] INFO  org.example.logic.Operations - Amount is  100.0
+2024-11-16 21:48:59.018 [main] INFO  org.example.logic.Operations - Speed: 300.0
+2024-11-16 21:48:59.026 [main] INFO  org.example.logic.Operations - Batch ID: 14.0
+2024-11-16 21:48:59.062 [main] INFO  org.example.logic.Operations - State: COMPLETE
+2024-11-16 21:48:59.064 [main] INFO  org.example.logic.Operations - Batch: DataValue{value=Variant{value=14.0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762637390645445, javaDate=Sat Nov 16 21:48:59 CET 2024}, serverTime=DateTime{utcTime=133762637390645445, javaDate=Sat Nov 16 21:48:59 CET 2024}}
+2024-11-16 21:48:59.066 [main] INFO  org.example.logic.Operations - BeerType: DataValue{value=Variant{value=0.0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762637390655532, javaDate=Sat Nov 16 21:48:59 CET 2024}, serverTime=DateTime{utcTime=133762637390655532, javaDate=Sat Nov 16 21:48:59 CET 2024}}
+2024-11-16 21:48:59.070 [main] INFO  org.example.logic.Operations - Total Produced: DataValue{value=Variant{value=100}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762637390705471, javaDate=Sat Nov 16 21:48:59 CET 2024}, serverTime=DateTime{utcTime=133762637390705471, javaDate=Sat Nov 16 21:48:59 CET 2024}}
+2024-11-16 21:48:59.082 [main] INFO  org.example.logic.Operations - Defective: DataValue{value=Variant{value=0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762637390811732, javaDate=Sat Nov 16 21:48:59 CET 2024}, serverTime=DateTime{utcTime=133762637390811732, javaDate=Sat Nov 16 21:48:59 CET 2024}}
+2024-11-16 21:48:59.949 [milo-shared-thread-pool-2] INFO  org.example.logic.Operations - New value received for Current State: DataValue{value=Variant{value=17}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762637389722916, javaDate=Sat Nov 16 21:48:58 CET 2024}, serverTime=DateTime{utcTime=133762637389722916, javaDate=Sat Nov 16 21:48:58 CET 2024}}
+2024-11-16 21:48:59.976 [milo-shared-thread-pool-2] INFO  org.example.logic.Operations - New value received for Produced Items: DataValue{value=Variant{value=100}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762637389808345, javaDate=Sat Nov 16 21:48:58 CET 2024}, serverTime=DateTime{utcTime=133762637389808345, javaDate=Sat Nov 16 21:48:58 CET 2024}}

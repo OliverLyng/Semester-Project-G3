@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class LogAppender {
-    private static final String LOG_FILE = "logs/beerbatch.log";
+    private static final String LOG_FILE = "logs/beer.log";
 
     public static void appendNewLineToLog() {
         try (FileWriter fw = new FileWriter(LOG_FILE, true);
