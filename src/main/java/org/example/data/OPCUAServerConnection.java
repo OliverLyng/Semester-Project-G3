@@ -11,12 +11,20 @@ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import java.util.List;
 
 public class OPCUAServerConnection {
+    private static OPCUAServerConnection instance;
     private OpcUaClient client;
     private final String endpointUrl;
     private boolean isConnected = false;
 
-    public OPCUAServerConnection(String endpointUrl) {
+    private OPCUAServerConnection(String endpointUrl) {
         this.endpointUrl = endpointUrl;
+    }
+
+    public static synchronized OPCUAServerConnection getInstance(String endpointUrl) {
+        if (instance == null) {
+            instance = new OPCUAServerConnection(endpointUrl);
+        }
+        return instance;
     }
 
     public OpcUaClient connect() throws Exception {

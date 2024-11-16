@@ -8,6 +8,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
+import org.example.utils.LogAppender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -151,12 +152,13 @@ public class Operations {
     }
 
     public static void main(String[] args) throws Exception {
-
+        LogAppender.appendNewLineToLog(); // Appends a newline at the start of each run
+        logger.info("Starting Program");
 
         OPCUAServerConnection serverConnection = null;
         OpcUaClient client = null;
         try {
-            serverConnection = new OPCUAServerConnection(endpointUrl);
+            serverConnection = OPCUAServerConnection.getInstance(endpointUrl);
             client = serverConnection.connect();
             SubscriptionService subscriptionService = new SubscriptionService(client);
             NodeRepository nodeRepository = new NodeRepository(client);
