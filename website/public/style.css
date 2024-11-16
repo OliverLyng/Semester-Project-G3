@@ -1,0 +1,200 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styling */
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #004466;
+    color: #fff;
+    padding: 20px;
+    position: relative;
+}
+
+.logo-container {
+    position: absolute;
+    left: 10px;
+    width: 110px;
+    height: 110px;
+}
+
+/* Logo Image */
+.logo {
+    width: 100%; /* Keeps the logo responsive to container size */
+    height: auto;
+}
+
+.logo {
+    width: 100%;
+    height: auto;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    color: #f5d47a;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 80px; /* Position it below the header */
+    left: 0;
+    width: 220px;
+    height: calc(100vh - 80px);
+    background-color: #f8f8f8;
+    padding-top: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    font-size: 18px;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.menu-item a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.menu-item:hover {
+    background-color: #ddd;
+}
+
+.active {
+    background-color: #d1c4e9; /* Highlight color */
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+/* Main Content Area */
+.content {
+    margin-left: 240px;
+    padding: 20px;
+}
+
+h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #666;
+}
+
+/* Button Group */
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.start-button { background-color: #4CAF50; }
+.pause-button { background-color: #FFA500; }
+.stop-button { background-color: #FF5722; }
+.report-button, .history-button { background-color: #333; }
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:active {
+    transform: scale(0.95); /* Shrinks button on click */
+}
+
+/* Glow Effect */
+.start-button:hover { box-shadow: 0 0 8px rgba(76, 175, 80, 0.6); }
+.pause-button:hover { box-shadow: 0 0 8px rgba(255, 165, 0, 0.6); }
+.stop-button:hover { box-shadow: 0 0 8px rgba(255, 87, 34, 0.6); }
+.report-button:hover, .history-button:hover { box-shadow: 0 0 8px rgba(51, 51, 51, 0.6); }
+
+/* Loading State */
+button.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Status Message */
+.status-message {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Status Message Styling */
+#brewingStatus {
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    color: #333;
+}
+
+.status-icon {
+    margin-right: 8px;
+    font-size: 24px; /* Icon size */
+    color: #4CAF50; /* Default color */
+}
+
+/* Optional: Change icon color based on status */
+.status-started .status-icon { color: #4CAF50; } /* Green for started */
+.status-paused .status-icon { color: #FFA500; } /* Orange for paused */
+.status-stopped .status-icon { color: #FF5722; } /* Red for stopped */
+
+
+/* Dashboard Sections */
+.dashboard-section {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.box {
+    flex: 1;
+    padding: 15px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.box h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.box p {
+    color: #555;
+}
