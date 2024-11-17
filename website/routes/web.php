@@ -13,4 +13,8 @@ Route::view('/history', 'history')->name('history');
 Route::view('/reports', 'reports')->name('reports');
 
 
+//API
 Route::post('/start-brewing', [BrewingController::class, 'startBrewing']);
+Route::post('/inventory', [InventoryClass::class,'store']);
+
+

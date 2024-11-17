@@ -28,4 +28,7 @@ public class BrewingController {
         System.out.println("Brewing process has been stopped!");
         return ResponseEntity.ok("Brewing process stopped successfully!");
     }
+
+  
+    
 }
