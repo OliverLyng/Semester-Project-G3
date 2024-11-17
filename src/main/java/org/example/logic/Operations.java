@@ -4,6 +4,7 @@ package org.example.logic;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.UaException;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 import org.example.data.NodeRepository;
 import org.example.data.OPCUAServerConnection;
@@ -75,10 +76,10 @@ public class Operations {
             operator.execute(client);
 
             // After production is finished write batch report
-            logger.info("Batch: " + nodeRepository.readNodeValue(Nodes.cmdBatchId));
-            logger.info("BeerType: " + nodeRepository.readNodeValue(Nodes.cmdBeerType));
-            logger.info("Total Produced: " + nodeRepository.readNodeValue(Nodes.prodProcessedCount));
-            logger.info("Defective: " + nodeRepository.readNodeValue(Nodes.prodDefectiveCount));
+            logger.info("Batch: {}", nodeRepository.readNodeValue(Nodes.cmdBatchId));
+            logger.info("BeerType: {}", nodeRepository.readNodeValue(Nodes.cmdBeerType));
+            logger.info("Total Produced: {}", nodeRepository.readNodeValue(Nodes.prodProcessedCount));
+            logger.info("Defective: {}", nodeRepository.readNodeValue(Nodes.prodDefectiveCount));
 
 
 
@@ -128,10 +129,9 @@ public class Operations {
     public void execute(OpcUaClient client) throws Exception {
 
         clear();
-        variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
+        //variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
         start();
         STATES states = checkStatus();
-        STOPPED_REASON reason;
         if (states.equals(STATES.STOPPED)) {
             handleStoppedStatus(states);
             reset();
@@ -143,7 +143,7 @@ public class Operations {
         logger.info("State: {}",currentState);
         while (states != STATES.COMPLETE) {
             while (currentState == states) {
-                states = Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString()));
+                states = Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
             }
             System.out.println(states);
             logger.info("State: {}",states);
@@ -159,56 +159,56 @@ public class Operations {
     public void loadSettings() throws Exception {
 
         settings = new Settings(0.0f, 100.0f, 300.0f);
-        UaVariableNode uaVariableNode;
-
 
         //chooses the type of beer
         nodeRepository.writeNodeValue(Nodes.cmdBeerType, new Variant(settings.getBeerType()));
 
 
         // This shows beertype as enum BEERTYPE using the converter
-        // Unknown if this is useful
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.cmdBeerType);
-        Object obj = uaVariableNode.readValue().getValue().getValue();
-        float f = (Float) obj;
-        int roundedValue = Math.round(f);
-        System.out.println("Beertype is " + Converter.showBeerType(roundedValue));
-        logger.info("Beertype is  {}", Converter.showBeerType(roundedValue));
+        // Unknown if this is useful.
+        //
+
+        DataValue dataValue = nodeRepository.readNodeValue(Nodes.cmdBeerType);
+        // A bit problematic converting float to int:
+        int beerType = (Math.round(Float.parseFloat(dataValue.getValue().getValue().toString())));
+        System.out.println("Beertype is " + Converter.showBeerType(beerType));
+        logger.info("Beertype is  {}", Converter.showBeerType(beerType));
 
         //chooses the amount of beer
         nodeRepository.writeNodeValue(Nodes.cmdAmountOfBeer, new Variant(settings.getBeerAmount()));
 
+        System.out.println("Refactor");
         // Also unknown if this is useful
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.cmdAmountOfBeer);
-        System.out.println("Amount: " + uaVariableNode.readValue().getValue().getValue().toString());
-        logger.info("Amount is  {}", uaVariableNode.readValue().getValue().getValue().toString());
+        String amount = nodeRepository.readNodeValue(Nodes.cmdAmountOfBeer).getValue().getValue().toString();
+        System.out.println("Amount: " + amount);
+        logger.info("Amount is  {}", amount);
 
         //switches speed of the product
         nodeRepository.writeNodeValue(Nodes.cmdMachSpeed, new Variant(settings.getMachSpeed()));
 
         // Also unknown if this is useful
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.cmdMachSpeed);
-        System.out.println("Speed: " + uaVariableNode.readValue().getValue().getValue().toString());
-        logger.info("Speed: {}", uaVariableNode.readValue().getValue().getValue().toString());
+        String speed = nodeRepository.readNodeValue(Nodes.cmdMachSpeed).getValue().getValue().toString();
+        System.out.println("Speed: " + speed);
+        logger.info("Speed: {}", speed);
 
 
         nodeRepository.writeNodeValue(Nodes.cmdBatchId, new Variant(14.0f));
 
         // Also unknown if this is useful
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.cmdBatchId);
-        System.out.println("Batch ID: " + uaVariableNode.readValue().getValue().getValue().toString());
-        logger.info("Batch ID: {}", uaVariableNode.readValue().getValue().getValue().toString());
+        String batchId = nodeRepository.readNodeValue(Nodes.cmdBatchId).getValue().getValue().toString();
+        System.out.println("Batch ID: " + batchId);
+        logger.info("Batch ID: {}", batchId);
     }
 
 
-    private void handleStartStatus(STATES state) throws UaException {
+    private void handleStartStatus(STATES state) {
         if (state.equals(STATES.STOPPED)) {
             needsReset = true;
         }
     }
 
-    private STOPPED_REASON handleStoppedStatus(STATES state) throws UaException, EmptyInventoryException, MaintenanceException {
-        STOPPED_REASON reasonState = null;
+    private void handleStoppedStatus(STATES state) throws UaException, EmptyInventoryException, MaintenanceException {
+        STOPPED_REASON reasonState;
         if (state.equals(STATES.STOPPED)) {
             int reason = Integer.parseInt(nodeRepository.readNodeValue(Nodes.stopReason).getValue().getValue().toString());
             reasonState =  Converter.showStopReason(reason);
@@ -237,12 +237,9 @@ public class Operations {
                 }
             }
         }
-        return reasonState;
     }
     private STATES checkStatus() throws Exception {
-        STATES state = Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
-        return state;
+        return Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
 
     }
-
 }
