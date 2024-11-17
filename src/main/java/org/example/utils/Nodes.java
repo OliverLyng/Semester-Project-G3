@@ -15,6 +15,11 @@ public class Nodes {
 
     UaClient client;
 
+    //Admin 
+    public NodeId producedCount = new NodeId(6, "::Program:Cube.Admin.ProdProcessedCount"); 
+    public NodeId defectCount = new NodeId(6,"::Program:Cube.Admin.ProdDefectiveCount"); 
+
+
     //Status
     public NodeId stateCurrent = new NodeId(6, "::Program:Cube.Status.StateCurrent");
     public NodeId machSpeedState = new NodeId(6, "::Program:Cube.Status.MachSpeed");
@@ -32,7 +37,8 @@ public class Nodes {
 
     //Data
     public NodeId temperature = new NodeId(6,"::Program:Data.Value.Temperature");
-
+    public NodeId humidity = new NodeId(6, "::Program:Data.Value.RelHumidity"); 
+   
     //Inventory
     public NodeId barley = new NodeId(6,"::Program:Inventory.Barley");
     public NodeId hops = new NodeId(6,"::Program:Inventory.Hops");

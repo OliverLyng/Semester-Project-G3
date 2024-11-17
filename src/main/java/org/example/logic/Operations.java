@@ -35,7 +35,7 @@ public class Operations {
 
     public void loadSettings(OpcUaClient client) throws Exception {
 
-        settings = new Settings(0, 1, 300);
+        settings = new Settings(0, 3, 300);
 
         // chooses the type of beer
         client.writeValue(node.parameter1, DataValue.valueOnly(new Variant(settings.getBeerType())));
@@ -53,7 +53,7 @@ public class Operations {
 
     public void execute(OpcUaClient client, UaVariableNode variableNode) throws Exception {
 
-        variableNode = client.getAddressSpace().getVariableNode(node.produced);
+        variableNode = client.getAddressSpace().getVariableNode(node.stateCurrent);
 
         // starts the production
         client.writeValue(node.cntrlCmd, DataValue.valueOnly(new Variant(2)));
@@ -61,17 +61,17 @@ public class Operations {
 
         while (true) {
             // Reads the current production count
-            int beerproducedValue = Integer.parseInt(variableNode.readValue().getValue().getValue().toString());
-            System.out.println("The amount produced is currently: " + beerproducedValue);
+            int stateCurrent = Integer.parseInt(variableNode.readValue().getValue().getValue().toString());
+            System.out.println("The current state is: " + stateCurrent);
 
             // Check if production target is met
-            if (beerproducedValue == 1) {
+            if (stateCurrent == 17) {
                 System.out.println("Production is now complete");
                 break;
             }
 
             // Adds delay to reduce the amount of print statements in the terminal
-            Thread.sleep(500);
+            Thread.sleep(2000);
         }
 
         // resets the machine
@@ -111,7 +111,7 @@ public class Operations {
 
         // Examples
 
-        Nodes nodes = new Nodes();
+        /*Nodes nodes = new Nodes();
 
         UaVariableNode stateCurrentNode = client.getAddressSpace().getVariableNode(nodes.stateCurrent);
 
@@ -122,6 +122,9 @@ public class Operations {
         Thread.sleep(500);
 
         System.out.println("The current state after restarting production is: " + stateCurrentNode.readValue().getValue().getValue());
+        
+        */
+
 
     }
 }
