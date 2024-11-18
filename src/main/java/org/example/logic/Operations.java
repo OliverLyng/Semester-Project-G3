@@ -1,158 +1,58 @@
 package org.example.logic;
 
+
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
-
+import org.example.data.NodeRepository;
+import org.example.data.OPCUAServerConnection;
+import org.example.exceptions.EmptyInventoryException;
+import org.example.exceptions.MaintenanceException;
+import org.example.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.example.data.NodeRepository;
-import org.example.data.OPCUAServerConnection;
-
-import org.example.utils.Converter;
-import org.example.utils.Nodes;
-import org.example.utils.STATES;
-
 import java.util.Objects;
+
 
 public class Operations {
 
     private static final Logger logger = LoggerFactory.getLogger(Operations.class);
 
-    static Operations operator;
-
+    private NodeRepository nodeRepository;
+    private OpcUaClient client;
     Settings settings;
-
     UaVariableNode variableNodeState;
-
     static String endpointUrl = "opc.tcp://localhost:4840";
+    boolean needsReset = false;
 
-
-    private void reset(UaClient client) throws Exception {
-        System.out.println("In Reset");
-        logger.info("In Reset");
-        client.writeValue(Nodes.cntrlCmd, DataValue.valueOnly(new Variant(1)));
-        client.writeValue(Nodes.cmdChange, DataValue.valueOnly(new Variant(true)));
-        System.out.println(Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString())));
-        logger.info("State: {}", Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString())));
-    }
-
-    public void clear(UaClient client) throws Exception {
-        client.writeValue(Nodes.cntrlCmd, DataValue.valueOnly(new Variant(5)));
-        client.writeValue(Nodes.cmdChange, DataValue.valueOnly(new Variant(true)));
-    }
-
-    public void execute(OpcUaClient client) throws Exception {
-
-        variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
-        //starts the production
-        client.writeValue(Nodes.cntrlCmd, DataValue.valueOnly(new Variant(2)));
-        client.writeValue(Nodes.cmdChange, DataValue.valueOnly(new Variant(true)));
-        STATES states = Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString()));
-        STATES currentState = states;
-        System.out.println(currentState);
-        logger.info("State: {}",currentState);
-        while (states != STATES.COMPLETE) {
-            while (currentState == states) {
-                states = Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString()));
-            }
-            System.out.println(states);
-            logger.info("State: {}",states);
-            currentState = states;
-
-            //operator.checkStatus(client);
-        }
-        System.out.println("Beers produced: " + client.getAddressSpace().getVariableNode(Nodes.produced).readValue().getValue().getValue().toString());
-        logger.info("Beers produced: : {}", client.getAddressSpace().getVariableNode(Nodes.produced).readValue().getValue().getValue().toString());
+    public Operations(OpcUaClient client) {
+        this.client = client;
+        this.nodeRepository = new NodeRepository(client);
     }
 
 
-    public void loadSettings(OpcUaClient client) throws Exception {
 
-        settings = new Settings(2, 100, 300);
-        UaVariableNode uaVariableNode;
-
-
-        //chooses the type of beer
-        client.writeValue(Nodes.parameter1, DataValue.valueOnly(new Variant(settings.getBeerType())));
-
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.parameter1);
-
-        Object obj = uaVariableNode.readValue().getValue().getValue();
-        float f = (Float) obj;
-        int roundedValue = Math.round(f);
-        System.out.println("Beertype is " + Converter.showBeerType(roundedValue));
-        logger.info("Beertype is  {}", Converter.showBeerType(roundedValue));
-
-        //chooses the amount of beer
-        client.writeValue(Nodes.parameter2, DataValue.valueOnly(new Variant(settings.getBeerAmount())));
-
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.parameter2);
-        System.out.println("Amount: " + uaVariableNode.readValue().getValue().getValue().toString());
-        logger.info("Amount is  {}", uaVariableNode.readValue().getValue().getValue().toString());
-
-        //switches speed of the product
-        client.writeValue(Nodes.machSpeed, DataValue.valueOnly(new Variant(settings.getMachSpeed())));
-
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.machSpeedState);
-        System.out.println("Speed: " + uaVariableNode.readValue().getValue().getValue().toString());
-        logger.info("Speed: {}", uaVariableNode.readValue().getValue().getValue().toString());
-        //Batch Id
-        client.writeValue(Nodes.parameter0, DataValue.valueOnly(new Variant(20)));
-
-        uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.statusParameter0);
-        System.out.println("Batch ID: " + uaVariableNode.readValue().getValue().getValue().toString());
-        logger.info("Batch ID: {}", uaVariableNode.readValue().getValue().getValue().toString());
-    }
-
-    private void printStatus() throws Exception {
-        System.out.println();
-        logger.info("");
-    }
-
-    private void checkStatus(OpcUaClient client) throws Exception {
-        variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
-        UaVariableNode uaVariableNode;
-        STATES states = Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString()));
-        switch (Objects.requireNonNull(states)) {
-            case ABORTED -> {
-                System.out.println("Machine production was aborted");
-                logger.error("Machine production was aborted");
-            }
-
-
-            case COMPLETE, STOPPED -> {
-                System.out.println("Production complete. Resetting...");
-                logger.info("Production complete. Resetting...");
-                operator.reset(client);
-            }
-            case EXECUTE -> {
-                uaVariableNode = client.getAddressSpace().getVariableNode(Nodes.machSpeedState);
-                System.out.println("Speed: " + uaVariableNode.readValue().getValue().getValue().toString());
-                logger.info("Speed: {}", uaVariableNode.readValue().getValue().getValue().toString());
-            }
-//            case IDLE ->
-//                    operator.execute(client);
-        }
-    }
 
     public static void main(String[] args) throws Exception {
-
+        LogAppender.appendNewLineToLog(); // Appends a newline at the start of each run
+        logger.info("Starting Program");
 
         OPCUAServerConnection serverConnection = null;
         OpcUaClient client = null;
         try {
-            serverConnection = new OPCUAServerConnection(endpointUrl);
+            serverConnection = OPCUAServerConnection.getInstance(endpointUrl);
             client = serverConnection.connect();
             SubscriptionService subscriptionService = new SubscriptionService(client);
             NodeRepository nodeRepository = new NodeRepository(client);
 
+            Operations operator = new Operations(client);
+
             // Subscribe to changes on status
             subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
-                System.out.println("New value received for Current Stat2e: " + dataValue);
+                System.out.println("New value received for Current State: " + dataValue);
                 logger.info("New value received for Current State: {}", dataValue);
             });
             // Subscribe to changes on produced items
@@ -162,19 +62,28 @@ public class Operations {
             });
 
 
-            operator = new Operations();
 
             //operator.reset(client);
-            operator.loadSettings(client);
+            operator.loadSettings();
+            STATES states = operator.checkStatus();
+            System.out.println("Here we see if states are found: " + states);
+            System.out.println("Here is reading from NodeRepo: " + nodeRepository.readNodeValue(Nodes.stateCurrent));
+
+            operator.handleStartStatus(states);
+            if (operator.needsReset) {
+                operator.reset();
+            }
             operator.execute(client);
 
+            // After production is finished write batch report
+            logger.info("Batch: {}", nodeRepository.readNodeValue(Nodes.cmdBatchId));
+            logger.info("BeerType: {}", nodeRepository.readNodeValue(Nodes.cmdBeerType));
+            logger.info("Total Produced: {}", nodeRepository.readNodeValue(Nodes.prodProcessedCount));
+            logger.info("Defective: {}", nodeRepository.readNodeValue(Nodes.prodDefectiveCount));
 
-            DataValue dataValue = nodeRepository.readNodeValue(Nodes.stateCurrent);
-            System.out.println("Current value: " + dataValue);
-            logger.info("Current value: {}", dataValue);
-            nodeRepository.writeNodeValue(Nodes.machSpeedState, new Variant(300));
 
-            // Keep the application running to continue receiving updates
+
+            // Maybe?? Keep the application running to continue receiving updates
             Thread.sleep(Long.MAX_VALUE);
         } catch (Exception e) {
             e.printStackTrace();
@@ -191,32 +100,146 @@ public class Operations {
             }
         }
     }
+
+
+    private void reset() throws Exception {
+        System.out.println("In Reset");
+        logger.info("In Reset");
+        nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(1));
+        nodeRepository.writeNodeValue (Nodes.cmdChange, new Variant(true));
+//        client.writeValue(Nodes.cntrlCmd, DataValue.valueOnly(new Variant(1)));
+//        client.writeValue(Nodes.cmdChange, DataValue.valueOnly(new Variant(true)));
+        System.out.println(Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString())));
+        logger.info("State: {}", Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString())));
+    }
+
+    public void clear() throws Exception {
+
+        nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(5));
+        nodeRepository.writeNodeValue (Nodes.cmdChange, new Variant(true));
+
+    }
+
+    public void start() throws UaException, InterruptedException {
+        //starts the production
+        nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(2));
+        nodeRepository.writeNodeValue(Nodes.cmdChange, new Variant(true));
+    }
+
+    public void execute(OpcUaClient client) throws Exception {
+
+        clear();
+        //variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
+        start();
+        STATES states = checkStatus();
+        if (states.equals(STATES.STOPPED)) {
+            handleStoppedStatus(states);
+            reset();
+            start();
+        }
+
+        STATES currentState = states;
+        System.out.println(currentState);
+        logger.info("State: {}",currentState);
+        while (states != STATES.COMPLETE) {
+            while (currentState == states) {
+                states = Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
+            }
+            System.out.println(states);
+            logger.info("State: {}",states);
+            currentState = states;
+
+            //operator.checkStatus(client);
+        }
+//        System.out.println("Beers produced: " + client.getAddressSpace().getVariableNode(Nodes.produced).readValue().getValue().getValue().toString());
+//        logger.info("Beers produced: : {}", client.getAddressSpace().getVariableNode(Nodes.produced).readValue().getValue().getValue().toString());
+    }
+
+
+    public void loadSettings() throws Exception {
+
+        settings = new Settings(0.0f, 100.0f, 300.0f);
+
+        //chooses the type of beer
+        nodeRepository.writeNodeValue(Nodes.cmdBeerType, new Variant(settings.getBeerType()));
+
+
+        // This shows beertype as enum BEERTYPE using the converter
+        // Unknown if this is useful.
+        //
+
+        DataValue dataValue = nodeRepository.readNodeValue(Nodes.cmdBeerType);
+        // A bit problematic converting float to int:
+        int beerType = (Math.round(Float.parseFloat(dataValue.getValue().getValue().toString())));
+        System.out.println("Beertype is " + Converter.showBeerType(beerType));
+        logger.info("Beertype is  {}", Converter.showBeerType(beerType));
+
+        //chooses the amount of beer
+        nodeRepository.writeNodeValue(Nodes.cmdAmountOfBeer, new Variant(settings.getBeerAmount()));
+
+        System.out.println("Refactor");
+        // Also unknown if this is useful
+        String amount = nodeRepository.readNodeValue(Nodes.cmdAmountOfBeer).getValue().getValue().toString();
+        System.out.println("Amount: " + amount);
+        logger.info("Amount is  {}", amount);
+
+        //switches speed of the product
+        nodeRepository.writeNodeValue(Nodes.cmdMachSpeed, new Variant(settings.getMachSpeed()));
+
+        // Also unknown if this is useful
+        String speed = nodeRepository.readNodeValue(Nodes.cmdMachSpeed).getValue().getValue().toString();
+        System.out.println("Speed: " + speed);
+        logger.info("Speed: {}", speed);
+
+
+        nodeRepository.writeNodeValue(Nodes.cmdBatchId, new Variant(14.0f));
+
+        // Also unknown if this is useful
+        String batchId = nodeRepository.readNodeValue(Nodes.cmdBatchId).getValue().getValue().toString();
+        System.out.println("Batch ID: " + batchId);
+        logger.info("Batch ID: {}", batchId);
+    }
+
+
+    private void handleStartStatus(STATES state) {
+        if (state.equals(STATES.STOPPED)) {
+            needsReset = true;
+        }
+    }
+
+    private void handleStoppedStatus(STATES state) throws UaException, EmptyInventoryException, MaintenanceException {
+        STOPPED_REASON reasonState;
+        if (state.equals(STATES.STOPPED)) {
+            int reason = Integer.parseInt(nodeRepository.readNodeValue(Nodes.stopReason).getValue().getValue().toString());
+            reasonState =  Converter.showStopReason(reason);
+            switch (Objects.requireNonNull(reasonState)) {
+                case EMPTY_INVENTORY -> {
+                    throw new EmptyInventoryException("Inventory is empty");
+                }
+                case MAINTENANCE -> {
+                    throw new MaintenanceException("Maintenance");
+                }
+                case MANUAL_STOP -> {
+                    System.out.println("Manual Stop");
+                    logger.info("Manual Stop");
+                }
+                case MOTOR_POWER_LOSS -> {
+                    System.out.println("Motor stopped");
+                    logger.info("Motor Stopped");
+                }
+                case MANUAL_ABORT -> {
+                    System.out.println("Production was aborted manually");
+                    logger.info("Production was aborted manually");
+                }
+                default -> {
+                    System.out.println("Stop reason unknown");
+                    logger.info("Stop reason unknown");
+                }
+            }
+        }
+    }
+    private STATES checkStatus() throws Exception {
+        return Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
+
+    }
 }
-
-
-//
-//
-//        String endpointUrl = "opc.tcp://localhost:4840";  // Change to your server's URL
-//
-//        // Build OPC-UA client
-//        OpcUaClient client = OpcUaClient.create(endpointUrl);
-//
-//        // Connect to the server
-//        CompletableFuture<UaClient> connectFuture = client.connect();
-//
-//        // Block until connection is established
-//        connectFuture.get();
-//
-//        System.out.println("Client connected to server: " + endpointUrl);
-//        operator = new Operations();
-//
-//        operator.checkStatus(client);
-//        //operator.reset(client);
-//        operator.loadSettings(client);
-//        operator.execute(client);
-
-
-
-
-
-
