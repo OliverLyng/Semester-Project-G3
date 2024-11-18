@@ -3,10 +3,15 @@ package org.example.logic;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
+
+@RestController
+@RequestMapping("/api/inventory")
 public class Inventory {
 
     private float wheatAmount;
@@ -30,7 +35,7 @@ public class Inventory {
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(inventoryData,headers);
 
-            String apiUrl = "localhost:8000/inventory";
+            String apiUrl = "http://localhost:8000/api/inventory";
             RestTemplate restTemplate = new RestTemplate();
             String response = restTemplate.postForObject(apiUrl,request,String.class);
 

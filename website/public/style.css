@@ -52,7 +52,7 @@ body {
 /* Sidebar */
 .sidebar {
     position: fixed;
-    top: 80px; /* Position it below the header */
+    top: 72px; /* Position it below the header */
     left: 0;
     width: 220px;
     height: calc(100vh - 80px);
@@ -198,3 +198,4 @@ button.loading {
 .box p {
     color: #555;
 }
+
