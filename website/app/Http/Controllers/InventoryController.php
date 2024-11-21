@@ -8,16 +8,13 @@ class InventoryController extends Controller
 {
     public function store(Request $request)
     {
-        $validateData = $request->validate
-        ([
-            'wheat' => 'required|numeric'
+        // Retrieve data from the request
+        $data = $request->all();
+
+        // Respond with the data for testing
+        return response()->json([
+            'message' => 'Inventory data received successfully!',
+            'data' => $data,
         ]);
-
-        $response = [
-            'message' => 'Data saved sucessfully',
-            'data' => $validateData,
-        ];
-
-        return response()->json($response ,200);
     }
 }
