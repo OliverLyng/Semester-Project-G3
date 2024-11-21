@@ -17,6 +17,8 @@ public class OPCUAServerConnection {
     private OpcUaClient client;
     private final String endpointUrl;
     private boolean isConnected = false;
+    private String selectedEndpointMachine = "192.168.0.122";
+    private String getSelectedEndpointSimulation = "localhost";
 
     private OPCUAServerConnection(String endpointUrl) {
         this.endpointUrl = endpointUrl;
@@ -47,7 +49,7 @@ public class OPCUAServerConnection {
                         .orElseThrow(() -> new Exception("No 'No Security' endpoints found"));
 
                 // Update the endpoint URL to ensure it matches the local configuration
-                EndpointDescription updatedEndpoint = EndpointUtil.updateUrl(selectedEndpoint, "127.0.0.1", 4840);
+                EndpointDescription updatedEndpoint = EndpointUtil.updateUrl(selectedEndpoint, getSelectedEndpointSimulation, 4840);
 
                 // Configure the client
                 OpcUaClientConfig config = OpcUaClientConfig.builder()
