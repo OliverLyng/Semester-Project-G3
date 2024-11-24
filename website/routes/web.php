@@ -19,6 +19,6 @@ Route::view('/reports', 'reports')->name('reports');
 //API
 Route::post('/start-brewing', [BrewingController::class, 'startBrewing']);
 
-Route::get('/inventory',[InventoryController::class,'show'])->name('show');
+Route::get('/inventory',[InventoryController::class,'show'])->name('inventory');
 
 
