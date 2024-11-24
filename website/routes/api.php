@@ -17,3 +17,4 @@ Route::post('/stop-brewing', function () {
     $response = Http::post('http://localhost:8080/api/stop');
     return $response->json();
 });
+

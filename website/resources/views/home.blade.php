@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Home Brew Hub Dashboard</title>
     <link rel="stylesheet" href="{{ asset('style.css') }}">
 </head>
@@ -89,11 +90,17 @@
     brewingStatus.classList.add(statusClass);
 }
 
-function handleButtonClick(button, routeName) {
+function handleButtonClick(button, routeUrl) {
     button.classList.add("loading");
     button.disabled = true;
 
-    fetch(route(routeName), { method: "POST" })
+    fetch(routeUrl, {
+        method: "POST",
+        headers: {
+    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+    "Content-Type": "application/json"
+}
+    })
         .then(response => response.ok ? response.json() : Promise.reject("Request failed"))
         .then(data => {
             console.log(data);
@@ -107,19 +114,20 @@ function handleButtonClick(button, routeName) {
             button.classList.remove("loading");
             button.disabled = false;
         });
-}
+    }
 
     document.getElementById("startButton").addEventListener("click", function () {
-    handleButtonClick(this, 'start-brewing');
+    handleButtonClick(this, "{{ route('start-brewing') }}");
 });
 
-    document.getElementById("pauseButton").addEventListener("click", function () {
-    handleButtonClick(this, 'pause-brewing');
+document.getElementById("pauseButton").addEventListener("click", function () {
+    handleButtonClick(this, "{{ route('pause-brewing') }}");
 });
 
-    document.getElementById("stopButton").addEventListener("click", function () {
-    handleButtonClick(this, 'stop-brewing');
+document.getElementById("stopButton").addEventListener("click", function () {
+    handleButtonClick(this, "{{ route('stop-brewing') }}");
 });
+
 
 </script>
 </body>
