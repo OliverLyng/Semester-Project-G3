@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
 use Illuminate\Support\Facades\Cache;
-use App\Http\Controllers\DataController;
 
 
 
@@ -20,6 +19,6 @@ Route::view('/reports', 'reports')->name('reports');
 //API
 Route::post('/start-brewing', [BrewingController::class, 'startBrewing']);
 
-Route::get('/inventory',[DataController::class,'show'])->name('inventory');
+Route::get('/inventory',[InventoryController::class,'show'])->name('show');
 
 
