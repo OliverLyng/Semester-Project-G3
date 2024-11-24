@@ -14,13 +14,13 @@ import java.util.Map;
 @RequestMapping("/api/inventory")
 public class Inventory {
 
-    private float wheatAmount;
+    private String wheatAmount;
 
     public Inventory(){
-        this.wheatAmount = 0;
+        this.wheatAmount = "0";
     }
 
-    public void setWheatAmount(float wheatAmount){
+    public void setWheatAmount(String wheatAmount){
         this.wheatAmount=wheatAmount;
         postInventory();
     }
@@ -28,7 +28,7 @@ public class Inventory {
     private void postInventory(){
         try {
             Map<String, Object> inventoryData = new HashMap<>();
-            inventoryData.put("wheat",10);
+            inventoryData.put("wheat","300");
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -51,7 +51,7 @@ public class Inventory {
         Inventory updater = new Inventory();
 
         // Simulate inventory updates
-        updater.setWheatAmount(150);
+        updater.setWheatAmount("150");
     }
 
 }

@@ -30,7 +30,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($showData as $show)
                     <tr data-stock="ok">
                         <td>
                             <div class="ingredient-container">
@@ -38,7 +37,7 @@
                                 <span>Hops</span>
                             </div>
                         </td>
-                        <td>{{ucfirst($show)}}</td>
+                        <td></td>
                         <td><button class="reorder-button">Reorder</button></td>
                     </tr>
                     <tr data-stock="low">
@@ -85,7 +84,6 @@
                         <td class="alert-cell"><span class="alert-icon">&#9888;</span> Low Stock</td>
                         <td><button class="reorder-button">Reorder</button></td>
                     </tr>
-                    @endforeach
                 </tbody>
             </table>
         </div>

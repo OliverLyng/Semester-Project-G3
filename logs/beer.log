@@ -996,3 +996,14 @@ java.net.SocketException: Connection reset
 2024-11-16 21:48:59.082 [main] INFO  org.example.logic.Operations - Defective: DataValue{value=Variant{value=0}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762637390811732, javaDate=Sat Nov 16 21:48:59 CET 2024}, serverTime=DateTime{utcTime=133762637390811732, javaDate=Sat Nov 16 21:48:59 CET 2024}}
 2024-11-16 21:48:59.949 [milo-shared-thread-pool-2] INFO  org.example.logic.Operations - New value received for Current State: DataValue{value=Variant{value=17}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762637389722916, javaDate=Sat Nov 16 21:48:58 CET 2024}, serverTime=DateTime{utcTime=133762637389722916, javaDate=Sat Nov 16 21:48:58 CET 2024}}
 2024-11-16 21:48:59.976 [milo-shared-thread-pool-2] INFO  org.example.logic.Operations - New value received for Produced Items: DataValue{value=Variant{value=100}, status=StatusCode{name=Good, value=0x00000000, quality=good}, sourceTime=DateTime{utcTime=133762637389808345, javaDate=Sat Nov 16 21:48:58 CET 2024}, serverTime=DateTime{utcTime=133762637389808345, javaDate=Sat Nov 16 21:48:58 CET 2024}}
+2024-11-24 21:23:08.726 [main] INFO  org.example.logic.Application - Starting Application using Java 17.0.8.1 with PID 16484 (C:\Users\olyng\OneDrive\Skrivebord\Semester3\SP3\Semester-Project-G3\target\classes started by olyng in C:\Users\olyng\OneDrive\Skrivebord\Semester3\SP3\Semester-Project-G3)
+2024-11-24 21:23:08.757 [main] INFO  org.example.logic.Application - No active profile set, falling back to 1 default profile: "default"
+2024-11-24 21:23:09.976 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2024-11-24 21:23:09.995 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2024-11-24 21:23:09.995 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2024-11-24 21:23:09.995 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.19]
+2024-11-24 21:23:10.094 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2024-11-24 21:23:10.094 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1297 ms
+2024-11-24 21:23:10.463 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2024-11-24 21:23:10.494 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2024-11-24 21:23:10.511 [main] INFO  org.example.logic.Application - Started Application in 2.163 seconds (process running for 2.912)

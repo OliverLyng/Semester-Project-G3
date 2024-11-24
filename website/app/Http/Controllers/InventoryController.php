@@ -3,26 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Inventory;
 
 class InventoryController extends Controller
 {
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'name'=>'required|string|max:255',
-            'quantity'=>'required|float',
-        ]);
-        $inventory = Inventory::create($validated);
+        $item = Inventory::create($request->all());
         
-        return response()->json([
-            'message'=>'Item created successfully!',
-            'data'=>$inventory
-        ],201);
+        return response()->json($item);
     }
 
     public function show(){
-        $inventory = Inventory::all();
 
-        return response()->json($inventory,200);
+        $inventories = Inventory::all();
+        return response()->json($inventories);
     }
 }

@@ -5,4 +5,5 @@ use App\Http\Controllers\InventoryController;
 use Illuminate\Http\Request;
 use App\Models\Inventory;
 
-Route::post('/inventory', [InventoryController::class, 'store']);
+
+Route::post("/inventory", [InventoryController::class, 'store']);
