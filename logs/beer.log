@@ -1007,3 +1007,6 @@ java.net.SocketException: Connection reset
 2024-11-24 21:23:10.463 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
 2024-11-24 21:23:10.494 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
 2024-11-24 21:23:10.511 [main] INFO  org.example.logic.Application - Started Application in 2.163 seconds (process running for 2.912)
+
+
+
