@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Home Brew Hub Dashboard</title>
     <link rel="stylesheet" href="{{ asset('style.css') }}">
 </head>
@@ -89,37 +90,44 @@
     brewingStatus.classList.add(statusClass);
 }
 
-function handleButtonClick(button, url, statusText, statusClass) {
+function handleButtonClick(button, routeUrl) {
     button.classList.add("loading");
     button.disabled = true;
 
-    fetch(url, { method: "POST" })
-        .then(response => response.ok ? response.text() : Promise.reject("Request failed"))
+    fetch(routeUrl, {
+        method: "POST",
+        headers: {
+    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+    "Content-Type": "application/json"
+}
+    })
+        .then(response => response.ok ? response.json() : Promise.reject("Request failed"))
         .then(data => {
             console.log(data);
-            updateStatusMessage(data, statusClass);
+            updateStatusMessage(data.message, "status-success");
         })
         .catch(error => {
             console.error("Error:", error);
-            updateStatusMessage("There was an error processing the request.", "status-error");
+            updateStatusMessage("An error occurred.", "status-error");
         })
         .finally(() => {
             button.classList.remove("loading");
             button.disabled = false;
         });
-}
+    }
 
     document.getElementById("startButton").addEventListener("click", function () {
-    handleButtonClick(this, "http://localhost:8080/api/start", "Brewing process started successfully!", "status-started");
-    });
+    handleButtonClick(this, "{{ route('start-brewing') }}");
+});
 
-    document.getElementById("pauseButton").addEventListener("click", function () {
-    handleButtonClick(this, "http://localhost:8080/api/pause", "Brewing process paused.", "status-paused");
-    });
+document.getElementById("pauseButton").addEventListener("click", function () {
+    handleButtonClick(this, "{{ route('pause-brewing') }}");
+});
 
-    document.getElementById("stopButton").addEventListener("click", function () {
-    handleButtonClick(this, "http://localhost:8080/api/stop", "Brewing process stopped.", "status-stopped");
-    });
+document.getElementById("stopButton").addEventListener("click", function () {
+    handleButtonClick(this, "{{ route('stop-brewing') }}");
+});
+
 
 </script>
 </body>

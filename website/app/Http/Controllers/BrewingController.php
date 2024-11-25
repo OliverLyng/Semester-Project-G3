@@ -11,23 +11,16 @@ class BrewingController extends Controller
 {
     public function startBrewing()
     {
-        // URL of the Spring Boot API endpoint
-        $springBootUrl = 'http://localhost:8080/api/start-brewing';
+        return response()->json(['message' => 'Brewing process started successfully!']);
+    }
 
-        // Make a POST request to the Spring Boot API
-        $response = Http::post($springBootUrl);
+    public function pauseBrewing()
+    {
+        return response()->json(['message' => 'Brewing process paused successfully!']);
+    }
 
-        // Check if the request was successful
-        if ($response->successful()) {
-            return response()->json([
-                'status' => 'success',
-                'message' => $response->body(),
-            ]);
-        } else {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to start the brewing process.',
-            ], 500);
-        }
+    public function stopBrewing()
+    {
+        return response()->json(['message' => 'Brewing process stopped successfully!']);
     }
 }
