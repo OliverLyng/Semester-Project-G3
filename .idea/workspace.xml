@@ -4,26 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="068eac79-55aa-494d-93e2-65ad68a427d3" name="Changes" comment="merge main into oliver">
-      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_04_11_2024_10_13_[Changes]/shelved.patch" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_04_11_2024_10_13_[Changes]1/shelved.patch" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Checkout_at_04_11_2024_10_13__Changes_.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_28_10_2024_10_31_[Changes]/shelved.patch" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_28_10_2024_10_31_[Changes]1/shelved.patch" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_28_10_2024_10_31__Changes_.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/beer.json" beforeDir="false" afterPath="$PROJECT_DIR$/logs/beer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/logs/beer.log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/beer.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/website/bootstrap/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/website/bootstrap/app.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/website/bootstrap/cache/packages.php" beforeDir="false" afterPath="$PROJECT_DIR$/website/bootstrap/cache/packages.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/website/bootstrap/cache/services.php" beforeDir="false" afterPath="$PROJECT_DIR$/website/bootstrap/cache/services.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/website/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/website/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/website/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/website/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/website/public/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/website/public/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/website/resources/views/inventory.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/website/resources/views/inventory.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/website/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/website/routes/web.php" afterDir="false" />
-    </list>
+    <list default="true" id="068eac79-55aa-494d-93e2-65ad68a427d3" name="Changes" comment="adding log files into gitignore" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -63,7 +44,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "git-widget-placeholder": "Merging main",
+    "git-widget-placeholder": "Rebasing main",
     "last_opened_file_path": "C:/Users/olyng/OneDrive/Skrivebord/Semester3/SP3/Semester-Project-G3",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -185,7 +166,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730372503217</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="adding log files into gitignore">
+      <option name="closed" value="true" />
+      <created>1732560596292</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1732560596292</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -211,6 +200,7 @@
     <MESSAGE value="execute method change" />
     <MESSAGE value="small changes" />
     <MESSAGE value="loadSettings works, execute kind of works, start works. state is stuck at 17" />
-    <option name="LAST_COMMIT_MESSAGE" value="loadSettings works, execute kind of works, start works. state is stuck at 17" />
+    <MESSAGE value="adding log files into gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding log files into gitignore" />
   </component>
 </project>
