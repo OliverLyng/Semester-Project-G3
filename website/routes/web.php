@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BrewingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {

@@ -35,8 +35,6 @@ public class Operations {
     }
 
 
-
-
     public static void main(String[] args) throws Exception {
         LogAppender.appendNewLineToLog(); // Appends a newline at the start of each run
         logger.info("Starting Program");
@@ -63,7 +61,6 @@ public class Operations {
             });
 
 
-
             //operator.reset(client);
             operator.loadSettings();
             STATES states = operator.checkStatus();
@@ -71,13 +68,13 @@ public class Operations {
             operator.handleStartStatus(states);
             if (operator.needsReset) {
                 operator.reset();
+                Thread.sleep(5000);
             }
             operator.execute(client);
 
 
-
             // Maybe?? Keep the application running to continue receiving updates
-            //Thread.sleep(Long.MAX_VALUE);
+            Thread.sleep(Long.MAX_VALUE);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(String.valueOf(e));
@@ -96,27 +93,31 @@ public class Operations {
 
 
     private void reset() throws Exception {
-        System.out.println("In Reset");
-        logger.info("In Reset");
-        nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(1));
-        nodeRepository.writeNodeValue (Nodes.cmdChange, new Variant(true));
+        if (needsReset) {
+            System.out.println("In Reset");
+            logger.info("In Reset");
+            nodeRepository.writeNodeValue(Nodes.cntrlCmd, new Variant(1));
+            nodeRepository.writeNodeValue(Nodes.cmdChange, new Variant(true));
 //        client.writeValue(Nodes.cntrlCmd, DataValue.valueOnly(new Variant(1)));
 //        client.writeValue(Nodes.cmdChange, DataValue.valueOnly(new Variant(true)));
-        System.out.println(Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString())));
-        logger.info("State: {}", Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString())));
+            String state = nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString();
+            System.out.println(Converter.showState(Integer.parseInt(state)));
+            logger.info("State: {}", Converter.showState(Integer.parseInt(state)));
+        }
     }
 
     public void clear() throws Exception {
 
-        nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(5));
-        nodeRepository.writeNodeValue (Nodes.cmdChange, new Variant(true));
+        nodeRepository.writeNodeValue(Nodes.cntrlCmd, new Variant(5));
+        nodeRepository.writeNodeValue(Nodes.cmdChange, new Variant(true));
 
     }
 
     public void start() throws UaException, InterruptedException {
         //starts the production
-        nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(2));
+        nodeRepository.writeNodeValue(Nodes.cntrlCmd, new Variant(2));
         nodeRepository.writeNodeValue(Nodes.cmdChange, new Variant(true));
+        Thread.sleep(1000);
     }
 
     public void execute(OpcUaClient client) throws Exception {
@@ -133,14 +134,14 @@ public class Operations {
 
         STATES currentState = states;
         System.out.println(currentState);
-        logger.info("State: {}",currentState);
+        logger.info("State: {}", currentState);
         while (states != STATES.COMPLETE) {
             while (currentState == states) {
                 states = Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
             }
 
             System.out.println(states);
-            logger.info("State: {}",states);
+            logger.info("State: {}", states);
             currentState = states;
 
             //operator.checkStatus(client);
@@ -191,7 +192,7 @@ public class Operations {
 
 
     private void handleStartStatus(STATES state) {
-        if (state.equals(STATES.STOPPED)) {
+        if (state.equals(STATES.STOPPED) || state.equals(STATES.COMPLETE)) {
             needsReset = true;
         }
     }
@@ -200,7 +201,7 @@ public class Operations {
         STOPPED_REASON reasonState;
         if (state.equals(STATES.STOPPED)) {
             int reason = Integer.parseInt(nodeRepository.readNodeValue(Nodes.stopReason).getValue().getValue().toString());
-            reasonState =  Converter.showStopReason(reason);
+            reasonState = Converter.showStopReason(reason);
             switch (Objects.requireNonNull(reasonState)) {
                 case EMPTY_INVENTORY -> {
                     throw new EmptyInventoryException("Inventory is empty");
@@ -227,6 +228,7 @@ public class Operations {
             }
         }
     }
+
     private STATES checkStatus() throws Exception {
         return Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
 
