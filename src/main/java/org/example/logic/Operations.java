@@ -26,6 +26,7 @@ public class Operations {
     Settings settings;
     UaVariableNode variableNodeState;
     static String endpointUrl = "opc.tcp://localhost:4840";
+    static String endpointUrlRealMachine = "opc.tcp://192.168.0.122:4840";
     boolean needsReset = false;
 
     public Operations(OpcUaClient client) {
@@ -66,8 +67,6 @@ public class Operations {
             //operator.reset(client);
             operator.loadSettings();
             STATES states = operator.checkStatus();
-            System.out.println("Here we see if states are found: " + states);
-            System.out.println("Here is reading from NodeRepo: " + nodeRepository.readNodeValue(Nodes.stateCurrent));
 
             operator.handleStartStatus(states);
             if (operator.needsReset) {
@@ -75,16 +74,10 @@ public class Operations {
             }
             operator.execute(client);
 
-            // After production is finished write batch report
-            logger.info("Batch: {}", nodeRepository.readNodeValue(Nodes.cmdBatchId));
-            logger.info("BeerType: {}", nodeRepository.readNodeValue(Nodes.cmdBeerType));
-            logger.info("Total Produced: {}", nodeRepository.readNodeValue(Nodes.prodProcessedCount));
-            logger.info("Defective: {}", nodeRepository.readNodeValue(Nodes.prodDefectiveCount));
-
 
 
             // Maybe?? Keep the application running to continue receiving updates
-            Thread.sleep(Long.MAX_VALUE);
+            //Thread.sleep(Long.MAX_VALUE);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(String.valueOf(e));
@@ -145,28 +138,28 @@ public class Operations {
             while (currentState == states) {
                 states = Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
             }
+
             System.out.println(states);
             logger.info("State: {}",states);
             currentState = states;
 
             //operator.checkStatus(client);
         }
-//        System.out.println("Beers produced: " + client.getAddressSpace().getVariableNode(Nodes.produced).readValue().getValue().getValue().toString());
-//        logger.info("Beers produced: : {}", client.getAddressSpace().getVariableNode(Nodes.produced).readValue().getValue().getValue().toString());
+        // After production is finished write batch report
+
+        logger.info("Total Produced: {}", nodeRepository.readNodeValue(Nodes.prodProcessedCount));
+        logger.info("Defective: {}", nodeRepository.readNodeValue(Nodes.prodDefectiveCount));
+
     }
 
 
     public void loadSettings() throws Exception {
 
-        settings = new Settings(0.0f, 100.0f, 300.0f);
+        settings = new Settings(0.0f, 100.0f, 700.0f);
 
         //chooses the type of beer
         nodeRepository.writeNodeValue(Nodes.cmdBeerType, new Variant(settings.getBeerType()));
 
-
-        // This shows beertype as enum BEERTYPE using the converter
-        // Unknown if this is useful.
-        //
 
         DataValue dataValue = nodeRepository.readNodeValue(Nodes.cmdBeerType);
         // A bit problematic converting float to int:
@@ -177,8 +170,6 @@ public class Operations {
         //chooses the amount of beer
         nodeRepository.writeNodeValue(Nodes.cmdAmountOfBeer, new Variant(settings.getBeerAmount()));
 
-        System.out.println("Refactor");
-        // Also unknown if this is useful
         String amount = nodeRepository.readNodeValue(Nodes.cmdAmountOfBeer).getValue().getValue().toString();
         System.out.println("Amount: " + amount);
         logger.info("Amount is  {}", amount);
@@ -186,7 +177,6 @@ public class Operations {
         //switches speed of the product
         nodeRepository.writeNodeValue(Nodes.cmdMachSpeed, new Variant(settings.getMachSpeed()));
 
-        // Also unknown if this is useful
         String speed = nodeRepository.readNodeValue(Nodes.cmdMachSpeed).getValue().getValue().toString();
         System.out.println("Speed: " + speed);
         logger.info("Speed: {}", speed);
@@ -194,7 +184,6 @@ public class Operations {
 
         nodeRepository.writeNodeValue(Nodes.cmdBatchId, new Variant(14.0f));
 
-        // Also unknown if this is useful
         String batchId = nodeRepository.readNodeValue(Nodes.cmdBatchId).getValue().getValue().toString();
         System.out.println("Batch ID: " + batchId);
         logger.info("Batch ID: {}", batchId);

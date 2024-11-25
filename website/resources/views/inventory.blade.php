@@ -16,7 +16,7 @@
     <div class="content">
         <h2>Inventory</h2>
         <p>Manage your brewing inventory and track ingredient levels in real time.</p>
-        
+
         <!-- Inventory Table Section -->
         <div class="inventory-section">
             <h3>Ingredient Stock Levels</h3>
@@ -30,61 +30,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr data-stock="ok">
-                        <td>
-                            <div class="ingredient-container">
-                                <img src="{{ asset('Images/hops-icon.png') }}" alt="Hops Icon" class="ingredient-icon"> 
-                                <span>Hops</span>
-                            </div>
-                        </td>
-                        <td>50 kg</td>
-                        <td>In Stock</td>
-                        <td><button class="reorder-button">Reorder</button></td>
-                    </tr>
-                    <tr data-stock="low">
-                        <td>
-                            <div class="ingredient-container">
-                                <img src="{{ asset('Images/malt-icon.png') }}" alt="Malt Icon" class="ingredient-icon"> 
-                                <span>Malt</span>
-                            </div>
-                        </td>
-                        <td>5 kg</td>
-                        <td class="alert-cell"><span class="alert-icon">&#9888;</span> Low Stock</td>
-                        <td><button class="reorder-button">Reorder</button></td>
-                    </tr>
-                    <tr data-stock="ok">
-                        <td>
-                            <div class="ingredient-container">
-                                <img src="{{ asset('Images/yeast-icon.png') }}" alt="Yeast Icon" class="ingredient-icon"> 
-                                <span>Yeast</span>
-                            </div>
-                        </td>
-                        <td>20 kg</td>
-                        <td>In Stock</td>
-                        <td><button class="reorder-button">Reorder</button></td>
-                    </tr>
-                    <tr data-stock="ok">
-                        <td>
-                            <div class="ingredient-container">
-                                <img src="{{ asset('Images/barley-icon.png') }}" alt="Barley Icon" class="ingredient-icon"> 
-                                <span>Barley</span>
-                            </div>
-                        </td>
-                        <td>60 kg</td>
-                        <td>In Stock</td>
-                        <td><button class="reorder-button">Reorder</button></td>
-                    </tr>
-                    <tr data-stock="low">
-                        <td>
-                            <div class="ingredient-container">
-                                <img src="{{ asset('Images/wheat-icon.png') }}" alt="Wheat Icon" class="ingredient-icon"> 
-                                <span>Wheat</span>
-                            </div>
-                        </td>
-                        <td>3 kg</td>
-                        <td class="alert-cell"><span class="alert-icon">&#9888;</span> Low Stock</td>
-                        <td><button class="reorder-button">Reorder</button></td>
-                    </tr>
+                    @foreach ($items as $item)
+                        <tr data-stock="{{ $item->quantity > 10 ? 'ok' : 'low' }}">
+                            <td>
+                                <div class="ingredient-container">
+                                    <img src="{{ asset('Images/' . strtolower($item->name) . '-icon.png') }}" 
+                                         alt="{{ $item->name }} Icon" class="ingredient-icon">
+                                    <span>{{ $item->name }}</span>
+                                </div>
+                            </td>
+                            <td>{{ $item->quantity }} kg</td>
+                            <td class="{{ $item->quantity > 10 ? '' : 'alert-cell' }}">
+                                {{ $item->quantity > 10 ? 'In Stock' : 'Low Stock' }}
+                                @if ($item->quantity <= 10)
+                                    <span class="alert-icon">&#9888;</span>
+                                @endif
+                            </td>
+                            <td><button class="reorder-button">Reorder</button></td>
+                        </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
