@@ -14,6 +14,7 @@ target/
 encodings.xml
 misc.xml
 uiDesigner.xml
+php.xml
 
 ### Eclipse ###
 .apt_generated
