@@ -31,7 +31,7 @@ public class OPCUAServerConnection {
         return instance;
     }
 
-    public OpcUaClient connect() throws Exception {
+    public synchronized OpcUaClient connect() throws Exception {
         try {
 
             if (client == null || !isConnected) {
@@ -72,7 +72,20 @@ public class OPCUAServerConnection {
         return client;
     }
 
-    private void scheduleReconnect() {
+    public synchronized OpcUaClient getClient() {
+        try {
+            if (client == null || !isConnected) {
+                connect();
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to connect to OPC UA server: " + e.getMessage());
+            // Optionally retry or handle error as needed
+            isConnected = false;
+        }
+        return client;
+    }
+
+    private synchronized void scheduleReconnect() {
         Executors.newSingleThreadScheduledExecutor().schedule(() -> {
             System.out.println("Attempting to reconnect...");
             try {
@@ -83,14 +96,14 @@ public class OPCUAServerConnection {
         },10, TimeUnit.SECONDS);
     }
 
-        public void disconnect() {
+        public synchronized void disconnect() {
         if (client != null && isConnected) {
             client.disconnect().join();
             isConnected = false;
         }
     }
 
-    public boolean isConnected() {
+    public synchronized boolean isConnected() {
         return isConnected;
     }
 
