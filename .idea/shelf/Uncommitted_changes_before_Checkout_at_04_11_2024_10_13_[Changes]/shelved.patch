@@ -1,0 +1,52 @@
+Index: src/main/java/org/example/logic/Operations.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.example.logic;\r\n\r\nimport org.eclipse.milo.opcua.sdk.client.OpcUaClient;\r\nimport org.eclipse.milo.opcua.sdk.client.api.UaClient;\r\nimport org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;\r\nimport org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;\r\nimport org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;\r\nimport org.eclipse.milo.opcua.stack.core.types.builtin.Variant;\r\n\r\nimport java.util.concurrent.CompletableFuture;\r\n\r\nimport org.example.utils.Nodes;\r\n\r\npublic class Operations {\r\n\r\n    Nodes node;\r\n\r\n    Settings settings;\r\n\r\n    public Operations(){\r\n        this.node = new Nodes();\r\n    }\r\n\r\n    public void start(UaClient client) throws Exception{\r\n        client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));\r\n        client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));\r\n    }\r\n\r\n    public void execute(OpcUaClient client,UaVariableNode variableNode) throws Exception{\r\n\r\n\r\n        variableNode = client.getAddressSpace().getVariableNode(node.produced);\r\n\r\n\r\n        //starts the production\r\n        client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(2)));\r\n        client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));\r\n\r\n        while(true){\r\n            System.out.println(\"Running outside of if statement\");\r\n\r\n            if(variableNode.getValue().getValue().equals(1)){\r\n                System.out.println(\"Running\");\r\n                break;\r\n            }\r\n        }\r\n\r\n        System.out.println(\"Out of loop\");\r\n        //resets the machine\r\n        client.writeValue(node.cntrlCmd,DataValue.valueOnly(new Variant(1)));\r\n        client.writeValue(node.cmdChange,DataValue.valueOnly(new Variant(true)));\r\n\r\n    }\r\n\r\n\r\n    public void loadSettings(OpcUaClient client) throws Exception{\r\n\r\n        settings = new Settings(0,1,300);\r\n\r\n        //chooses the type of beer\r\n        client.writeValue(node.parameter1,DataValue.valueOnly(new Variant(settings.getBeerType())));\r\n\r\n        //chooses the amount of beer\r\n        client.writeValue(node.parameter2,DataValue.valueOnly(new Variant(settings.getBeerAmount())));\r\n\r\n        //switches speed of the product\r\n        client.writeValue(node.machSpeed,DataValue.valueOnly(new Variant(settings.getMachSpeed())));\r\n\r\n\r\n        client.writeValue(node.parameter0,DataValue.valueOnly(new Variant(2)));\r\n\r\n    }\r\n\r\n\r\n\r\n\r\n\r\n    public static void main(String[] args) throws Exception {\r\n        String endpointUrl = \"opc.tcp://localhost:4840\";  // Change to your server's URL\r\n\r\n        // Build OPC-UA client\r\n        OpcUaClient client = OpcUaClient.create(endpointUrl);\r\n\r\n        // Connect to the server\r\n        CompletableFuture<UaClient> connectFuture = client.connect();\r\n\r\n        // Block until connection is established\r\n        connectFuture.get();\r\n\r\n        System.out.println(\"Client connected to server: \" + endpointUrl);\r\n\r\n\r\n        Operations operator = new Operations();\r\n        operator.node = new Nodes();\r\n        UaVariableNode uaVariableNode = client.getAddressSpace().getVariableNode(operator.node.produced);\r\n\r\n\r\n        operator.start(client);\r\n        operator.loadSettings(client);\r\n        operator.execute(client,uaVariableNode);\r\n\r\n\r\n        NodeId produced = new NodeId(6,\"::Program:product.produced\");\r\n\r\n        System.out.println(client.readValue(0,null,produced));\r\n\r\n\r\n\r\n        //Examples\r\n        /*\r\n        UaVariableNode node = client.getAddressSpace().getVariableNode(stateCurrent);\r\n        System.out.println(node.getValue());\r\n\r\n        //Write values\r\n        client.writeValue(cntrlCmd,DataValue.valueOnly(new Variant(1)));\r\n        client.writeValue(cmdChange,DataValue.valueOnly(new Variant(true)));\r\n\r\n        System.out.println(node.getValue());\r\n\r\n         */\r\n\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/org/example/logic/Operations.java b/src/main/java/org/example/logic/Operations.java
+--- a/src/main/java/org/example/logic/Operations.java	
++++ b/src/main/java/org/example/logic/Operations.java	
+@@ -95,29 +95,32 @@
+         UaVariableNode uaVariableNode = client.getAddressSpace().getVariableNode(operator.node.produced);
+ 
+ 
+-        operator.start(client);
+-        operator.loadSettings(client);
+-        operator.execute(client,uaVariableNode);
++        //operator.start(client);
++        //operator.loadSettings(client);
++        //operator.execute(client,uaVariableNode);
+ 
+ 
+-        NodeId produced = new NodeId(6,"::Program:product.produced");
++        //NodeId produced = new NodeId(6,"::Program:product.produced");
+ 
+-        System.out.println(client.readValue(0,null,produced));
++        //System.out.println(client.readValue(0,null,produced));
+ 
+ 
+ 
+         //Examples
+-        /*
++
++        NodeId stateCurrent = new NodeId(6, "::Program:Cube.Status.StateCurrent");
++        NodeId cntrlCmd = new NodeId(6,"::Program:Cube.Command.CntrlCmd");
++        NodeId cmdChange = new NodeId(6,"::Program:Cube.Command.CmdChangeRequest");
++
+         UaVariableNode node = client.getAddressSpace().getVariableNode(stateCurrent);
+-        System.out.println(node.getValue());
++        System.out.println(node.getValue().getValue());
+ 
+         //Write values
+         client.writeValue(cntrlCmd,DataValue.valueOnly(new Variant(1)));
+         client.writeValue(cmdChange,DataValue.valueOnly(new Variant(true)));
+ 
+-        System.out.println(node.getValue());
++        System.out.println(node.getValue().getValue());
+ 
+-         */
+ 
+     }
+ }
