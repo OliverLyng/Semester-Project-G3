@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class Operations {
 
-    private static final Logger logger = LoggerFactory.getLogger(Operations.class);
+    static final Logger logger = LoggerFactory.getLogger(Operations.class);
 
     private NodeRepository nodeRepository;
     private OpcUaClient client;
