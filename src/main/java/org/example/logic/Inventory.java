@@ -20,7 +20,7 @@ public class Inventory {
             headers.setContentType(MediaType.APPLICATION_JSON);
     
             // Create JSON body
-            String jsonBody = "{\"name\": \"wheat\", \"quantity\": \"400\", \"id\": \4\}";
+            String jsonBody = "{\"name\": \"wheat\", \"quantity\": \"400\", \"id\": 4}";
     
             // Create HttpEntity
             HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
