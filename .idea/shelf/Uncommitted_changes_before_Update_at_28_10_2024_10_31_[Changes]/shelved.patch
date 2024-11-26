@@ -1,0 +1,126 @@
+Index: src/main/java/org/example/OpcUaClientExample.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package org.example;\n\n\n/**\n * Hello world!\n *\n */\n\nimport org.eclipse.milo.opcua.sdk.client.OpcUaClient;\nimport org.eclipse.milo.opcua.sdk.client.api.UaClient;\nimport org.eclipse.milo.opcua.sdk.client.api.config.OpcUaClientConfigBuilder;\nimport org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;\nimport org.eclipse.milo.opcua.stack.client.DiscoveryClient;\nimport org.eclipse.milo.opcua.stack.core.UaException;\nimport org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;\nimport org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;\nimport org.eclipse.milo.opcua.stack.core.types.builtin.StatusCode;\nimport org.eclipse.milo.opcua.stack.core.types.builtin.Variant;\nimport org.eclipse.milo.opcua.stack.core.types.structured.Argument;\nimport org.eclipse.milo.opcua.stack.core.types.structured.CallMethodRequest;\nimport org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;\nimport org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;\nimport org.eclipse.milo.opcua.stack.core.util.EndpointUtil;\n\nimport java.util.concurrent.CompletableFuture;\n\npublic class OpcUaClientExample {\n    public static void main(String[] args) throws Exception {\n        String endpointUrl = \"opc.tcp://localhost:4840\";  // Change to your server's URL\n\n        // Build OPC-UA client\n        OpcUaClient client = OpcUaClient.create(endpointUrl);\n\n        // Connect to the server\n        CompletableFuture<UaClient> connectFuture = client.connect();\n\n        // Block until connection is established\n        connectFuture.get();\n\n        System.out.println(\"Client connected to server: \" + endpointUrl);\n\n        // Do other OPC-UA operations here, like reading/writing nodes\n\n\n        //Nodes\n        NodeId stateCurrent = new NodeId(6, \"::Program:Cube.Status.StateCurrent\");\n        NodeId cntrlCmd = new NodeId(6,\"::Program:Cube.Command.CntrlCmd\");\n        NodeId cmdChange = new NodeId(6,\"::Program:Cube.Command.CmdChangeRequest\");\n\n        //Print values\n        UaVariableNode node = client.getAddressSpace().getVariableNode(stateCurrent);\n        System.out.println(node.getValue());\n\n        //Write values\n        client.writeValue(cntrlCmd,DataValue.valueOnly(new Variant(1)));\n        client.writeValue(cmdChange,DataValue.valueOnly(new Variant(true)));\n\n        System.out.println(node.getValue());\n\n    }\n}\n
+===================================================================
+diff --git a/src/main/java/org/example/OpcUaClientExample.java b/src/main/java/org/example/OpcUaClientExample.java
+--- a/src/main/java/org/example/OpcUaClientExample.java	
++++ b/src/main/java/org/example/OpcUaClientExample.java	
+@@ -1,6 +1,8 @@
+ package org.example;
+ 
+ 
++import org.bouncycastle.pqc.math.linearalgebra.IntegerFunctions;
++
+ /**
+  * Hello world!
+  *
+@@ -21,10 +23,16 @@
+ import org.eclipse.milo.opcua.stack.core.types.structured.CallMethodResult;
+ import org.eclipse.milo.opcua.stack.core.types.structured.EndpointDescription;
+ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
++import java.util.Scanner;
+ 
+ import java.util.concurrent.CompletableFuture;
+ 
+ public class OpcUaClientExample {
++
++    private static int cmd;
++    private static float beerAmount;
++    private static float beerType;
++
+     public static void main(String[] args) throws Exception {
+         String endpointUrl = "opc.tcp://localhost:4840";  // Change to your server's URL
+ 
+@@ -41,21 +49,86 @@
+ 
+         // Do other OPC-UA operations here, like reading/writing nodes
+ 
+-
+         //Nodes
+         NodeId stateCurrent = new NodeId(6, "::Program:Cube.Status.StateCurrent");
+         NodeId cntrlCmd = new NodeId(6,"::Program:Cube.Command.CntrlCmd");
+         NodeId cmdChange = new NodeId(6,"::Program:Cube.Command.CmdChangeRequest");
++        NodeId produced = new NodeId(6,"::Program:product.produced");
++        NodeId parameter0value = new NodeId(6,"::Program:Cube.Command.Parameter[0].Value");
++        NodeId parameter1value = new NodeId(6,"::Program:Cube.Command.Parameter[1].Value");
++        NodeId parameter2value = new NodeId(6,"::Program:Cube.Command.Parameter[2].Value");
++
++
++
+ 
+         //Print values
++        UaVariableNode nodeProduced = client.getAddressSpace().getVariableNode(produced);
+         UaVariableNode node = client.getAddressSpace().getVariableNode(stateCurrent);
+-        System.out.println(node.getValue());
++
+ 
+         //Write values
+-        client.writeValue(cntrlCmd,DataValue.valueOnly(new Variant(1)));
+-        client.writeValue(cmdChange,DataValue.valueOnly(new Variant(true)));
++        // client.writeValue(cntrlCmd,DataValue.valueOnly(new Variant(1)));
++        // client.writeValue(cmdChange,DataValue.valueOnly(new Variant(true)));
++
++
++        System.out.println("cmd, exit, stop, abort, state, amount, type, produced");
++        Scanner scanner = new Scanner(System.in);
++
++        while(true){
++
++
++            System.out.print("Enter a command > ");
++            String userInput = scanner.nextLine();
++            String[] parts = userInput.split(" ");
++
++            if(parts[0].equalsIgnoreCase("exit")){
++                System.out.println("Exiting program");
++                break;
++            }
++            
++            if(parts[0].equalsIgnoreCase("state")){
++                System.out.println(node.getValue().getValue());
++            }
++            if(parts[0].equalsIgnoreCase("produced")){
++                System.out.println(nodeProduced.getValue().getValue());
++            }
++            if(parts[0].equalsIgnoreCase("abort")){
++                client.writeValue(cntrlCmd,DataValue.valueOnly(new Variant ((4))));
++                client.writeValue(cmdChange,DataValue.valueOnly(new Variant(true)));
++                client.writeValue(cntrlCmd,DataValue.valueOnly(new Variant ((5))));
++                client.writeValue(cmdChange,DataValue.valueOnly(new Variant(true)));
++            }
++            if(parts[0].equalsIgnoreCase("stop")){
++                client.writeValue(cntrlCmd,DataValue.valueOnly(new Variant ((3))));
++                client.writeValue(cmdChange,DataValue.valueOnly(new Variant(true)));
++            }
+ 
+-        System.out.println(node.getValue());
++            if(parts.length == 2){
++                String command = parts[0];
++                int value;
++                try{
++                    value = Integer.parseInt(parts[1]);
++                }catch(NumberFormatException e){
++                    System.out.println("Invalid number format");
++                    continue;
++                }
+ 
++                if (command.equalsIgnoreCase("cmd")){
++                    cmd = value;
++                    client.writeValue(cntrlCmd,DataValue.valueOnly(new Variant ((cmd))));
++                    client.writeValue(cmdChange,DataValue.valueOnly(new Variant(true)));
++                }
++                if(command.equalsIgnoreCase("amount")){
++                    beerAmount = value;
++                    client.writeValue(parameter1value,DataValue.valueOnly(new Variant(beerAmount)));
++                }
++                if(command.equalsIgnoreCase("type")){
++                    beerType = value;
++                    client.writeValue(parameter2value,DataValue.valueOnly(new Variant(beerType)));
++                }
++
++                }
++        }
++        scanner.close();
+     }
+ }

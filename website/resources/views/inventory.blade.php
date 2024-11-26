@@ -16,7 +16,7 @@
     <div class="content">
         <h2>Inventory</h2>
         <p>Manage your brewing inventory and track ingredient levels in real time.</p>
-        
+
         <!-- Inventory Table Section -->
         <div class="inventory-section">
             <h3>Ingredient Stock Levels</h3>

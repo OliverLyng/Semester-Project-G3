@@ -34,4 +34,14 @@ public class Converter {
             default -> null;
         };
     }
+    public static STOPPED_REASON showStopReason(int state) {
+        return switch (state) {
+            case 10 -> STOPPED_REASON.EMPTY_INVENTORY;
+            case 11 -> STOPPED_REASON.MAINTENANCE;
+            case 12 -> STOPPED_REASON.MANUAL_STOP;
+            case 13 -> STOPPED_REASON.MOTOR_POWER_LOSS;
+            case 14 -> STOPPED_REASON.MANUAL_ABORT;
+            default -> null;
+        };
+    }
 }
