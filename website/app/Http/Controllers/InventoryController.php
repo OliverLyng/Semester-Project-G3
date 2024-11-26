@@ -26,6 +26,6 @@ class InventoryController extends Controller
     public function show(){
 
         $inventories = Inventory::all();
-        return response()->json($inventories);
+        return view('inventory',['items'=>$inventories]);
     }
 }
