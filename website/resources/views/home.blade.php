@@ -26,10 +26,10 @@
             <img src="{{ asset('Images/scheduling-icon.png') }}" alt="Scheduling Icon" class="icon"> 
             <a href="{{ route('scheduling') }}">Scheduling</a>
         </div>
-        <div class="menu-item">
+        <!-- <div class="menu-item">
             <img src="{{ asset('Images/current-batch-icon.png') }}" alt="Current Batch Icon" class="icon"> 
             <a href="{{ route('current_batch') }}">Current Batch</a>
-        </div>
+        </div> -->
         <div class="menu-item">
             <img src="{{ asset('Images/inventory-icon.png') }}" alt="Inventory Icon" class="icon"> 
             <a href="{{ route('inventory') }}">Inventory</a>
@@ -57,7 +57,7 @@
             <button class="report-button">Generate Report</button>
             <button class="history-button">View Batch History</button>
         </div>
-        
+
         <!-- Dashboard Sections -->
         <div class="dashboard-section">
             <div class="box"> 
@@ -67,67 +67,115 @@
                 <span id="statusMessageText">Live status of the ongoing brewing process will be displayed here.</span>
                 </p>
                 </div>
-            <div class="box">
+                
+            <!-- <div class="box">
                 <h3>Upcoming Batches</h3>
                 <p>Details about upcoming batches, scheduled timings, and ingredients will be shown here.</p>
-            </div>
+            </div> -->
+
             <div class="box">
                 <h3>Recent Reports</h3>
                 <p>Quick access to the most recent reports generated will be available here.</p>
             </div>
         </div>
-        <div id="statusMessage" class="status-message"></div> <!-- Status message element for displaying responses -->
+
+        <!-- Batch Overview Section -->
+        <div class="batch-overview">
+            <div class="batch-details">
+                <h3><img src="{{ asset('Images/details-icon.png') }}" alt="Details Icon" class="icon"> Batch Details</h3>
+                <ul>
+                    <li>
+                        <img src="{{ asset('Images/temperature-icon.png') }}" alt="Temperature Icon" class="inline-icon">
+                        <strong>Temperature:</strong> <span>22°C</span>
+                    </li>
+                    <li>
+                        <img src="{{ asset('Images/humidity-icon.png') }}" alt="Humidity Icon" class="inline-icon">
+                        <strong>Humidity:</strong> <span>45%</span>
+                    </li>
+                    <li>
+                        <img src="{{ asset('Images/vibration-icon.png') }}" alt="Vibration Icon" class="inline-icon">
+                        <strong>Vibration:</strong> <span>Low</span>
+                    </li>
+                    <li>
+                        <img src="{{ asset('Images/production-icon.png') }}" alt="Produced Icon" class="inline-icon">
+                        <strong>Produced:</strong> <span>120 Bottles</span>
+                    </li>
+                    <li>
+                        <img src="{{ asset('Images/defect-icon.png') }}" alt="Defects Icon" class="inline-icon">
+                        <strong>Defects:</strong> <span>2 Bottles</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="ingredient-levels">
+                <h3><img src="{{ asset('Images/ingredients-icon.png') }}" alt="Ingredients Icon" class="icon"> Ingredient Levels</h3>
+                <ul>
+                    <li>
+                        <img src="{{ asset('Images/barley-icon.png') }}" alt="Barley Icon" class="inline-icon">
+                        <strong>Barley:</strong> <span>75%</span>
+                    </li>
+                    <li>
+                        <img src="{{ asset('Images/hops-icon.png') }}" alt="Hops Icon" class="inline-icon">
+                        <strong>Hops:</strong> <span>60%</span>
+                    </li>
+                    <li>
+                        <img src="{{ asset('Images/malt-icon.png') }}" alt="Malt Icon" class="inline-icon">
+                        <strong>Malt:</strong> <span>80%</span>
+                    </li>
+                    <li>
+                        <img src="{{ asset('Images/wheat-icon.png') }}" alt="Wheat Icon" class="inline-icon">
+                        <strong>Wheat:</strong> <span>50%</span>
+                    </li>
+                    <li>
+                        <img src="{{ asset('Images/yeast-icon.png') }}" alt="Yeast Icon" class="inline-icon">
+                        <strong>Yeast:</strong> <span>90%</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <!-- JavaScript -->
     <script>
-    function updateStatusMessage(text, statusClass) {
-    const statusMessageText = document.getElementById("statusMessageText");
-    const brewingStatus = document.getElementById("brewingStatus");
+        function updateStatusMessage(text, statusClass) {
+            const statusMessageText = document.getElementById("statusMessageText");
+            const brewingStatus = document.getElementById("brewingStatus");
 
-    statusMessageText.innerText = text;
-    brewingStatus.className = ""; // Clear previous status classes
-    brewingStatus.classList.add(statusClass);
-}
+            statusMessageText.innerText = text;
+            brewingStatus.className = ""; // Clear previous status classes
+            brewingStatus.classList.add(statusClass);
+        }
 
-function handleButtonClick(button, routeUrl) {
+function handleButtonClick(button, url, statusText, statusClass) {
     button.classList.add("loading");
     button.disabled = true;
 
-    fetch(routeUrl, {
-        method: "POST",
-        headers: {
-    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-    "Content-Type": "application/json"
-}
-    })
-        .then(response => response.ok ? response.json() : Promise.reject("Request failed"))
+    fetch(url, { method: "POST" })
+        .then(response => response.ok ? response.text() : Promise.reject("Request failed"))
         .then(data => {
             console.log(data);
-            updateStatusMessage(data.message, "status-success");
+            updateStatusMessage(data, statusClass);
         })
         .catch(error => {
             console.error("Error:", error);
-            updateStatusMessage("An error occurred.", "status-error");
+            updateStatusMessage("There was an error processing the request.", "status-error");
         })
         .finally(() => {
             button.classList.remove("loading");
             button.disabled = false;
         });
-    }
+}
 
     document.getElementById("startButton").addEventListener("click", function () {
-    handleButtonClick(this, "{{ route('start-brewing') }}");
-});
+    handleButtonClick(this, "http://localhost:8080/api/start", "Brewing process started successfully!", "status-started");
+    });
 
-document.getElementById("pauseButton").addEventListener("click", function () {
-    handleButtonClick(this, "{{ route('pause-brewing') }}");
-});
+    document.getElementById("pauseButton").addEventListener("click", function () {
+    handleButtonClick(this, "http://localhost:8080/api/pause", "Brewing process paused.", "status-paused");
+    });
 
-document.getElementById("stopButton").addEventListener("click", function () {
-    handleButtonClick(this, "{{ route('stop-brewing') }}");
-});
-
+    document.getElementById("stopButton").addEventListener("click", function () {
+    handleButtonClick(this, "http://localhost:8080/api/stop", "Brewing process stopped.", "status-stopped");
+    });
 
 </script>
 </body>
