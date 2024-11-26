@@ -7,3 +7,4 @@ use App\Models\Inventory;
 
 
 Route::post('/inventory', [InventoryController::class, 'store']);
+Route::put('/update-inventory',[InventoryController::class,'update']);
