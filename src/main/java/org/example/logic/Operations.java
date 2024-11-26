@@ -19,7 +19,7 @@ import java.util.Objects;
 
 public class Operations {
 
-    private static final Logger logger = LoggerFactory.getLogger(Operations.class);
+    static final Logger logger = LoggerFactory.getLogger(Operations.class);
 
     private NodeRepository nodeRepository;
     private OpcUaClient client;
@@ -95,7 +95,7 @@ public class Operations {
     }
 
 
-    private void reset() throws Exception {
+    public void reset() throws Exception {
         System.out.println("In Reset");
         logger.info("In Reset");
         nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(1));
@@ -118,6 +118,13 @@ public class Operations {
         nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(2));
         nodeRepository.writeNodeValue(Nodes.cmdChange, new Variant(true));
     }
+
+    public void stop() throws UaException, InterruptedException {
+        //starts the production
+        nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(3));
+        nodeRepository.writeNodeValue(Nodes.cmdChange, new Variant(true));
+    }
+
 
     public void execute(OpcUaClient client) throws Exception {
 
@@ -190,13 +197,13 @@ public class Operations {
     }
 
 
-    private void handleStartStatus(STATES state) {
+    public void handleStartStatus(STATES state) {
         if (state.equals(STATES.STOPPED)) {
             needsReset = true;
         }
     }
 
-    private void handleStoppedStatus(STATES state) throws UaException, EmptyInventoryException, MaintenanceException {
+    public void handleStoppedStatus(STATES state) throws UaException, EmptyInventoryException, MaintenanceException {
         STOPPED_REASON reasonState;
         if (state.equals(STATES.STOPPED)) {
             int reason = Integer.parseInt(nodeRepository.readNodeValue(Nodes.stopReason).getValue().getValue().toString());
@@ -227,7 +234,7 @@ public class Operations {
             }
         }
     }
-    private STATES checkStatus() throws Exception {
+    public STATES checkStatus() throws Exception {
         return Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
 
     }
