@@ -8,10 +8,7 @@ import org.example.utils.STATES;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import static org.example.logic.Operations.logger;
@@ -112,4 +109,30 @@ public class BrewingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to stop brewing process: Client is not connected.");
         }
     }
+    @PostMapping("/status")
+    public ResponseEntity<String> getBrewingStatus() {
+        connection = OPCUAServerConnection.getInstance(endpointUrl);
+        client = connection.getClient();
+        if (client != null && connection.isConnected()) {
+            try {
+                Operations operator = new Operations(client);
+                STATES currentStatus = operator.checkStatus();
+                return ResponseEntity.ok("Current Brewing Status: " + currentStatus);
+            } catch (Exception e) {
+                logger.error("Error fetching brewing status: ", e);
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error fetching brewing status: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Client is not connected.");
+        }
+    }
+
+    @PostMapping("/configure")
+    public ResponseEntity<String> configureBrewSettings(@RequestBody Settings settings) {
+        // Validate settings
+        // Apply settings to the brewing process
+        return ResponseEntity.ok("Brewing settings configured successfully!");
+    }
+
+
 }
