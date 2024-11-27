@@ -10,6 +10,7 @@ import org.example.data.NodeRepository;
 import org.example.data.OPCUAServerConnection;
 import org.example.exceptions.EmptyInventoryException;
 import org.example.exceptions.MaintenanceException;
+import org.example.models.BrewingData;
 import org.example.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -237,5 +238,10 @@ public class Operations {
     public STATES checkStatus() throws Exception {
         return Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
 
+    }
+    public BrewingData collectBrewingData() throws UaException {
+        double temperature = Double.parseDouble(nodeRepository.readNodeValue(Nodes.temperature).getValue().getValue().toString());
+        double vibrations = Double.parseDouble(nodeRepository.readNodeValue(Nodes.temperature).getValue().getValue().toString());
+        return new BrewingData(temperature, vibrations);
     }
 }

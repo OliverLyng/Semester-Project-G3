@@ -3,6 +3,7 @@ package org.example.logic;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.example.data.NodeRepository;
 import org.example.data.OPCUAServerConnection;
+import org.example.models.BrewingData;
 import org.example.utils.Nodes;
 import org.example.utils.STATES;
 import org.slf4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 
 import static org.example.logic.Operations.logger;
+import static org.example.utils.JsonUtils.toJson;
 
 
 @RestController
@@ -56,42 +58,44 @@ public class BrewingController {
     }
 
     // Stand-in for setting settings
-    @PostMapping("/pause")
-    public ResponseEntity<String> pauseBrewing() throws Exception {
-        connection = OPCUAServerConnection.getInstance(endpointUrl);
-        client = connection.getClient();
-        if (client != null && connection.isConnected()) {
-            try {
-                subscriptionService = new SubscriptionService(client);
-                nodeRepository = new NodeRepository(client);
 
-                Operations operator = new Operations(client);
 
-                // Subscribe to changes on status
-                subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
-                    System.out.println("New value received for Current State: " + dataValue);
-                    logger.info("New value received for Current State: {}", dataValue);
-                });
-                // Subscribe to changes on produced items
-                subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
-                    System.out.println("New value received for Produced Items: " + dataValue);
-                    logger.info("New value received for Produced Items: {}", dataValue);
-                });
-                operations = new Operations(client);
-                operations.loadSettings();
-                System.out.println("Settings has been set!");
-                return ResponseEntity.ok("Settings has been set!");
-            } catch (Exception e) {
-                System.err.println("Error during settings start: " + e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during settings start: " + e.getMessage());
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to Error during settings start: Client is not connected.");
-        }
-
+//    @PostMapping("/pause")
+//    public ResponseEntity<String> pauseBrewing() throws Exception {
+//        connection = OPCUAServerConnection.getInstance(endpointUrl);
+//        client = connection.getClient();
+//        if (client != null && connection.isConnected()) {
+//            try {
+//                subscriptionService = new SubscriptionService(client);
+//                nodeRepository = new NodeRepository(client);
+//
+//                Operations operator = new Operations(client);
+//
+//                // Subscribe to changes on status
+//                subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
+//                    System.out.println("New value received for Current State: " + dataValue);
+//                    logger.info("New value received for Current State: {}", dataValue);
+//                });
+//                // Subscribe to changes on produced items
+//                subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
+//                    System.out.println("New value received for Produced Items: " + dataValue);
+//                    logger.info("New value received for Produced Items: {}", dataValue);
+//                });
+//                operations = new Operations(client);
+//                operations.loadSettings();
+//                System.out.println("Settings has been set!");
+//                return ResponseEntity.ok("Settings has been set!");
+//            } catch (Exception e) {
+//                System.err.println("Error during settings start: " + e.getMessage());
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during settings start: " + e.getMessage());
+//            }
+//        } else {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to Error during settings start: Client is not connected.");
+//        }
+//      }
 
 //        return ResponseEntity.ok("Settings has been set!");
-    }
+
 
     @PostMapping("/stop")
     public ResponseEntity<String> stopBrewing() {
@@ -133,6 +137,21 @@ public class BrewingController {
         // Apply settings to the brewing process
         return ResponseEntity.ok("Brewing settings configured successfully!");
     }
+
+    @PostMapping("/brewing-data")
+    public ResponseEntity<String> pauseBrewing() {
+    /*public ResponseEntity<String> getBrewingData() { */
+        try {
+            Operations operations = new Operations(client); // Ensure you have access to `client`
+            BrewingData data = operations.collectBrewingData();
+            String jsonData = toJson(data);
+            return ResponseEntity.ok(jsonData);
+        } catch (Exception e) {
+            logger.error("Failed to get brewing data", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error getting brewing data: " + e.getMessage());
+        }
+    }
+
 
 
 }

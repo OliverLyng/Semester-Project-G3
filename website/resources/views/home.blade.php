@@ -11,7 +11,7 @@
     <!-- Header -->
     <div class="header">
         <div class="logo-container">
-            <img src="{{ asset('Images/logo.png') }}" alt="Home Brew Logo" class="logo"> 
+            <img src="{{ asset('Images/logo.png') }}" alt="Home Brew Logo" class="logo">
         </div>
         <h1 class="title">Home Brew Hub</h1>
     </div>
@@ -19,27 +19,27 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="menu-item">
-            <img src="{{ asset('Images/dashboard-icon.png') }}" alt="Dashboard Icon" class="icon"> 
+            <img src="{{ asset('Images/dashboard-icon.png') }}" alt="Dashboard Icon" class="icon">
             <a href="{{ route('dashboard') }}">Dashboard</a>
         </div>
         <div class="menu-item">
-            <img src="{{ asset('Images/scheduling-icon.png') }}" alt="Scheduling Icon" class="icon"> 
+            <img src="{{ asset('Images/scheduling-icon.png') }}" alt="Scheduling Icon" class="icon">
             <a href="{{ route('scheduling') }}">Scheduling</a>
         </div>
         <!-- <div class="menu-item">
-            <img src="{{ asset('Images/current-batch-icon.png') }}" alt="Current Batch Icon" class="icon"> 
+            <img src="{{ asset('Images/current-batch-icon.png') }}" alt="Current Batch Icon" class="icon">
             <a href="{{ route('current_batch') }}">Current Batch</a>
         </div> -->
         <div class="menu-item">
-            <img src="{{ asset('Images/inventory-icon.png') }}" alt="Inventory Icon" class="icon"> 
+            <img src="{{ asset('Images/inventory-icon.png') }}" alt="Inventory Icon" class="icon">
             <a href="{{ route('inventory') }}">Inventory</a>
         </div>
         <div class="menu-item">
-            <img src="{{ asset('Images/history-icon.png') }}" alt="History Icon" class="icon"> 
+            <img src="{{ asset('Images/history-icon.png') }}" alt="History Icon" class="icon">
             <a href="{{ route('history') }}">History</a>
         </div>
         <div class="menu-item">
-            <img src="{{ asset('Images/report-icon.png') }}" alt="Reports Icon" class="icon"> 
+            <img src="{{ asset('Images/report-icon.png') }}" alt="Reports Icon" class="icon">
             <a href="{{ route('reports') }}">Reports</a>
         </div>
     </div>
@@ -60,14 +60,14 @@
 
         <!-- Dashboard Sections -->
         <div class="dashboard-section">
-            <div class="box"> 
+            <div class="box">
                 <h3>Current Brewing Status</h3>
                 <p id="brewingStatus">
                 <span class="status-icon">&#128345;</span> <!-- Clock emoji as a placeholder icon -->
                 <span id="statusMessageText">Live status of the ongoing brewing process will be displayed here.</span>
                 </p>
                 </div>
-                
+
             <!-- <div class="box">
                 <h3>Upcoming Batches</h3>
                 <p>Details about upcoming batches, scheduled timings, and ingredients will be shown here.</p>
@@ -144,26 +144,51 @@
             brewingStatus.className = ""; // Clear previous status classes
             brewingStatus.classList.add(statusClass);
         }
+//
+// function handleButtonClick(button, url, statusText, statusClass) {
+//     button.classList.add("loading");
+//     button.disabled = true;
+//
+//     fetch(url, { method: "POST" })
+//         .then(response => response.ok ? response.text() : Promise.reject("Request failed"))
+//         .then(data => {
+//             console.log(data);
+//             updateStatusMessage(data, statusClass);
+//         })
+//         .catch(error => {
+//             console.error("Error:", error);
+//             updateStatusMessage("There was an error processing the request.", "status-error");
+//         })
+//         .finally(() => {
+//             button.classList.remove("loading");
+//             button.disabled = false;
+//         });
+// }
+        function handleButtonClick(button, url, statusText, statusClass) {
+            button.classList.add("loading");
+            button.disabled = true;
 
-function handleButtonClick(button, url, statusText, statusClass) {
-    button.classList.add("loading");
-    button.disabled = true;
-
-    fetch(url, { method: "POST" })
-        .then(response => response.ok ? response.text() : Promise.reject("Request failed"))
-        .then(data => {
-            console.log(data);
-            updateStatusMessage(data, statusClass);
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            updateStatusMessage("There was an error processing the request.", "status-error");
-        })
-        .finally(() => {
-            button.classList.remove("loading");
-            button.disabled = false;
-        });
-}
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json', // Expecting JSON response
+                    'Content-Type': 'application/json', // If you're sending JSON
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content') // CSRF token from meta tag
+                }
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('statusMessageText').innerText = data.message; // Ensure 'data.message' is what the API sends
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    document.getElementById('statusMessageText').innerText = 'There WAS an error processing the request.';
+                });
+        }
 
     document.getElementById("startButton").addEventListener("click", function () {
     handleButtonClick(this, "http://localhost:8080/api/start", "Brewing process started successfully!", "status-started");
