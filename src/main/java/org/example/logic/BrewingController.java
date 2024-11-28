@@ -130,12 +130,13 @@ public class BrewingController {
 
     @PostMapping("/configure")
     public ResponseEntity<String> configureBrewSettings(@RequestBody String payload) throws Exception {
+        System.out.println(payload);
 
-
-
-//        Float beerType = settings.getBeerType();
+//
+//        Float beerType = 0.0f;
 //        Float amount = 1000.0f;
 //        Float speed = 300.0f;
+        Settings settings = new Settings(0.0f,1000.0f,300.0f);
 
         operations.loadSettings(settings);
 //        operations.loadSettings(amount);
