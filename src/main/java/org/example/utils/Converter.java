@@ -46,6 +46,19 @@ public class Converter {
             default -> null;
         };
     }
+
+    public static String showBeerType(Float state) {
+        int stateAsInt = state.intValue();
+        return switch (stateAsInt) {
+            case 0 -> "Pilsner";
+            case 1 -> "Wheat";
+            case 2 -> "IPA";
+            case 3 -> "Stout";
+            case 4 -> "Ale";
+            case 5 -> "AlcoholFree";
+            default -> null;
+        };
+    }
     public static STOPPED_REASON showStopReason(int state) {
         return switch (state) {
             case 10 -> STOPPED_REASON.EMPTY_INVENTORY;

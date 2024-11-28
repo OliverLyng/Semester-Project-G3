@@ -13,7 +13,9 @@ import org.eclipse.milo.opcua.stack.core.types.structured.MonitoredItemCreateReq
 import org.eclipse.milo.opcua.stack.core.types.structured.MonitoringParameters;
 import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
@@ -21,6 +23,8 @@ import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.
 
 public class SubscriptionService {
     private final OpcUaClient client;
+    private final Map<NodeId, UaMonitoredItem> nodeItems = new HashMap<>(); // Map to track NodeId to MonitoredItem
+    private final Map<NodeId, UaSubscription> nodeSubscriptions = new HashMap<>(); // Map to track NodeId to Subscription
 
     public SubscriptionService(OpcUaClient client) {
         this.client = client;
@@ -56,6 +60,25 @@ public class SubscriptionService {
                 (item, id) -> item.setValueConsumer(valueConsumer)).get();
         return items.get(0); // Assuming one node subscription
 
+    }
+//    public void unsubscribeNode(UaMonitoredItem monitoredItem, UaSubscription subscription) throws ExecutionException, InterruptedException {
+//        subscription.deleteMonitoredItems(List.of(monitoredItem)).get();
+//        if (subscription.getMonitoredItems().isEmpty()) {
+//            client.getSubscriptionManager().deleteSubscription(subscription.getSubscriptionId()).get();
+//        }
+//    }
+    public void unsubscribeNode(NodeId nodeId) throws ExecutionException, InterruptedException {
+        UaMonitoredItem monitoredItem = nodeItems.remove(nodeId);
+        if (monitoredItem != null) {
+            UaSubscription subscription = nodeSubscriptions.get(nodeId);
+            if (subscription != null) {
+                subscription.deleteMonitoredItems(List.of(monitoredItem)).get();
+                if (subscription.getMonitoredItems().isEmpty()) {
+                    client.getSubscriptionManager().deleteSubscription(subscription.getSubscriptionId()).get();
+                    nodeSubscriptions.remove(nodeId);
+                }
+            }
+        }
     }
 }
 

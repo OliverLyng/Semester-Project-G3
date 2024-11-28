@@ -103,8 +103,8 @@ public class Operations {
         nodeRepository.writeNodeValue (Nodes.cmdChange, new Variant(true));
 //        client.writeValue(Nodes.cntrlCmd, DataValue.valueOnly(new Variant(1)));
 //        client.writeValue(Nodes.cmdChange, DataValue.valueOnly(new Variant(true)));
-        System.out.println(Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString())));
-        logger.info("State: {}", Converter.showState(Integer.parseInt(variableNodeState.readValue().getValue().getValue().toString())));
+        System.out.println(Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString())));
+        logger.info("State: {}", Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString())));
     }
 
     public void clear() throws Exception {

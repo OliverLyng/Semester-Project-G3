@@ -11,7 +11,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.json.JSONObject;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import static org.example.logic.Operations.logger;
 import static org.example.utils.Converter.showBeerType;
@@ -36,20 +40,37 @@ public class BrewingController {
     public ResponseEntity<String> startBrewing() {
         connection = OPCUAServerConnection.getInstance(endpointUrl);
         client = connection.getClient();
+        nodeRepository = new NodeRepository(client);
+
         if (client != null && connection.isConnected()) {
             try {
                 operations = new Operations(client);
                 operations.clear();
                 operations.start();  // Ensure this method properly initiates the brewing process
+
                 STATES states = operations.checkStatus();
                 if (states.equals(STATES.STOPPED)) {
                     operations.handleStoppedStatus(states);
+                    Thread.sleep(1500);
                     operations.reset();
+                    Thread.sleep(1500);
                     operations.start();
                 }
+                if (states.equals(STATES.EXECUTE)) {
+                    System.out.println("Brewing process has been started!");
+                    return ResponseEntity.ok("Brewing process started successfully!");
+                }
+                if (states.equals(STATES.COMPLETE)) {
+                    return ResponseEntity.ok("Brewing has finished. " +
+                            "BatchID:" + nodeRepository.readNodeValue(Nodes.cmdBatchId) +
+                            "\nTotal Beers produced: " + nodeRepository.readNodeValue(Nodes.produced) +
+                            "\nDefective amount: " + nodeRepository.readNodeValue(Nodes.prodDefectiveCount));
+                }
 
-                System.out.println("Brewing process has been started!");
-                return ResponseEntity.ok("Brewing process started successfully!");
+                return ResponseEntity.ok("Brewing" +
+                        "Beer Type: " + showBeerType(Float.parseFloat(nodeRepository.readNodeValue(Nodes.cmdBeerType).getValue().getValue().toString())) +
+                        "\nAmount: " + nodeRepository.readNodeValue(Nodes.cmdAmountOfBeer).getValue().getValue().toString() +
+                        "\nSpeed: " + nodeRepository.readNodeValue(Nodes.cmdMachSpeed).getValue().getValue().toString());
             } catch (Exception e) {
                 System.err.println("Error during brewing start: " + e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error starting brewing process: " + e.getMessage());
@@ -66,22 +87,32 @@ public class BrewingController {
         client = connection.getClient();
         if (client != null && connection.isConnected()) {
             try {
-                subscriptionService = new SubscriptionService(client);
                 nodeRepository = new NodeRepository(client);
+                subscriptionService = new SubscriptionService(client);
+                operations = new Operations(client);
 
-                Operations operator = new Operations(client);
 
                 // Subscribe to changes on status
                 subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
-                    System.out.println("New value received for Current State: " + dataValue);
+                    //System.out.println("New value received for Current State: " + dataValue);
                     logger.info("New value received for Current State: {}", dataValue);
                 });
                 // Subscribe to changes on produced items
                 subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
-                    System.out.println("New value received for Produced Items: " + dataValue);
+                    //System.out.println("New value received for Produced Items: " + dataValue);
                     logger.info("New value received for Produced Items: {}", dataValue);
                 });
-                operations = new Operations(client);
+                subscriptionService.subscribeToNode(Nodes.statusRelativeHumidity, dataValue -> {
+                    //System.out.println("New value received for Current State: " + dataValue);
+                    logger.info("New value received for Current State: {}", dataValue);
+                });
+                // Subscribe to changes on produced items
+                subscriptionService.subscribeToNode(Nodes.statusTemperature, dataValue -> {
+                    //System.out.println("New value received for Produced Items: " + dataValue);
+                    logger.info("New value received for Produced Items: {}", dataValue);
+                });
+
+
                 operations.reset();
                 System.out.println("Status has been reset!");
                 return ResponseEntity.ok("Brewery has been reset!");
@@ -93,8 +124,6 @@ public class BrewingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to Error during reset: Client is not connected.");
         }
 
-
-//        return ResponseEntity.ok("Settings has been set!");
     }
 
     @PostMapping("/stop")
@@ -114,6 +143,7 @@ public class BrewingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to stop brewing process: Client is not connected.");
         }
     }
+
     @PostMapping("/status")
     public ResponseEntity<String> getBrewingStatus() {
         connection = OPCUAServerConnection.getInstance(endpointUrl);
@@ -139,7 +169,7 @@ public class BrewingController {
         if (client != null && connection.isConnected()) {
             try {
                 operations = new Operations(client);
-                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!"+payload);
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!" + payload);
 
                 // Converting
 
@@ -173,6 +203,33 @@ public class BrewingController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to stop brewing process: Client is not connected.");
         }
+    }
+
+
+    @GetMapping("/brew-status-stream")
+    public SseEmitter streamBrewStatus() throws ExecutionException, InterruptedException {
+        final SseEmitter emitter = new SseEmitter();
+        // Assuming you have a service to handle subscription
+        subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
+            try {
+                emitter.send(SseEmitter.event().name("update").data(dataValue.getValue().getValue().toString()));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+                return;
+            }
+        });
+        emitter.onCompletion(() -> {
+            try {
+                subscriptionService.unsubscribeNode(Nodes.produced);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        emitter.onTimeout(emitter::complete);
+        return emitter;
+
     }
 
 }

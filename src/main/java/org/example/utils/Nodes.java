@@ -23,7 +23,7 @@ public class Nodes {
 
     //Data
     public static final NodeId temperature = new NodeId(6,"::Program:Data.Value.Temperature");
-
+    public static final NodeId humidity = new NodeId(6,"::Program:Data.Value.RelHumidity");
     //Inventory
     public static final NodeId barley = new NodeId(6,"::Program:Inventory.Barley");
     public static final NodeId hops = new NodeId(6,"::Program:Inventory.Hops");
