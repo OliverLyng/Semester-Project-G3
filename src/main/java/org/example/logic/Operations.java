@@ -65,7 +65,8 @@ public class Operations {
 
 
             //operator.reset(client);
-            operator.loadSettings();
+            // Out commented. Trying to get settings from web.
+            // operator.loadSettings();
             STATES states = operator.checkStatus();
 
             operator.handleStartStatus(states);
@@ -160,9 +161,10 @@ public class Operations {
     }
 
 
-    public void loadSettings() throws Exception {
+    public void loadSettings(Settings userSettings) throws Exception {
 
-        settings = new Settings(0.0f, 100.0f, 700.0f);
+        settings = new Settings(userSettings.getBeerType(),userSettings.getBeerAmount(),userSettings.getMachSpeed());
+        //settings = new Settings(0.0f, 100.0f, 700.0f);
 
         //chooses the type of beer
         nodeRepository.writeNodeValue(Nodes.cmdBeerType, new Variant(settings.getBeerType()));

@@ -2,6 +2,7 @@ package org.example.logic;
 
 import org.example.utils.Nodes;
 
+
 public class Settings {
 
     Nodes nodes;
@@ -36,7 +37,7 @@ public class Settings {
         return machSpeed;
     }
 
-    public void setMachSpeed(int machSpeed) {
+    public void setMachSpeed(float machSpeed) {
         this.machSpeed = machSpeed;
     }
 }

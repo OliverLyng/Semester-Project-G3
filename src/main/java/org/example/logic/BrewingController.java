@@ -28,6 +28,7 @@ public class BrewingController {
     SubscriptionService subscriptionService;
     NodeRepository nodeRepository;
 
+
     @PostMapping("/start")
     public ResponseEntity<String> startBrewing() {
         connection = OPCUAServerConnection.getInstance(endpointUrl);
@@ -128,8 +129,17 @@ public class BrewingController {
     }
 
     @PostMapping("/configure")
-    public ResponseEntity<String> configureBrewSettings(@RequestBody Settings settings) {
-        // Validate settings
+    public ResponseEntity<String> configureBrewSettings(@RequestBody String payload) throws Exception {
+
+
+
+//        Float beerType = settings.getBeerType();
+//        Float amount = 1000.0f;
+//        Float speed = 300.0f;
+
+        operations.loadSettings(settings);
+//        operations.loadSettings(amount);
+//        operations.loadSettings(speed);
         // Apply settings to the brewing process
         return ResponseEntity.ok("Brewing settings configured successfully!");
     }
