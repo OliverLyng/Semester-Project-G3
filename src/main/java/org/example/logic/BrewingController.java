@@ -79,7 +79,7 @@ public class BrewingController {
                     logger.info("New value received for Produced Items: {}", dataValue);
                 });
                 operations = new Operations(client);
-                operations.loadSettings();
+                //operations.loadSettings();
                 System.out.println("Settings has been set!");
                 return ResponseEntity.ok("Settings has been set!");
             } catch (Exception e) {
@@ -128,8 +128,8 @@ public class BrewingController {
         }
     }
 
-    @PostMapping("/configure")
-    public ResponseEntity<String> configureBrewSettings(@RequestBody String payload) throws Exception {
+    @PostMapping("/settings")
+    public ResponseEntity<String> getSettings(@RequestBody String payload) throws Exception {
         System.out.println(payload);
 
 //

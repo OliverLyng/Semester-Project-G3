@@ -8,41 +8,9 @@
     <link rel="stylesheet" href="{{ asset('style.css') }}">
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="logo-container">
-            <img src="{{ asset('Images/logo.png') }}" alt="Home Brew Logo" class="logo"> 
-        </div>
-        <h1 class="title">Home Brew Hub</h1>
-    </div>
-
     <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="menu-item">
-            <img src="{{ asset('Images/dashboard-icon.png') }}" alt="Dashboard Icon" class="icon"> 
-            <a href="{{ route('dashboard') }}">Dashboard</a>
-        </div>
-        <div class="menu-item">
-            <img src="{{ asset('Images/scheduling-icon.png') }}" alt="Scheduling Icon" class="icon"> 
-            <a href="{{ route('scheduling') }}">Scheduling</a>
-        </div>
-        <!-- <div class="menu-item">
-            <img src="{{ asset('Images/current-batch-icon.png') }}" alt="Current Batch Icon" class="icon"> 
-            <a href="{{ route('current_batch') }}">Current Batch</a>
-        </div> -->
-        <div class="menu-item">
-            <img src="{{ asset('Images/inventory-icon.png') }}" alt="Inventory Icon" class="icon"> 
-            <a href="{{ route('inventory') }}">Inventory</a>
-        </div>
-        <div class="menu-item">
-            <img src="{{ asset('Images/history-icon.png') }}" alt="History Icon" class="icon"> 
-            <a href="{{ route('history') }}">History</a>
-        </div>
-        <div class="menu-item">
-            <img src="{{ asset('Images/report-icon.png') }}" alt="Reports Icon" class="icon"> 
-            <a href="{{ route('reports') }}">Reports</a>
-        </div>
-    </div>
+        @include('partials.header')
+        @include('partials.sidebar')
 
     <!-- Main Content -->
     <div class="content">
