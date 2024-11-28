@@ -110,7 +110,7 @@ p {
 }
 
 .start-button { background-color: #4CAF50; } /* Green for start */
-.pause-button { background-color: #FFA500; } /* Orange for pause */
+.reset-button { background-color: #FFA500; } /* Orange for pause */
 .stop-button { background-color: #FF5722; } /* Red for stop */
 .report-button, .history-button { background-color: #333; } /* Dark grey for general buttons */
 

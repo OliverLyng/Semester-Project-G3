@@ -69,7 +69,15 @@
       <version>7.4.0</version>
       <scope>test</scope>
     </dependency>
+
+  <dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20240303</version>
+  </dependency>
+
   </dependencies>
+
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source> <!-- Assuming Java 17 -->

@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Http;
 
 class SettingsController extends Controller
 {
-    public function update(Request $request)
+    public function update()
     {
-        return response()->json(['message' => 'Brewing process started successfully!']);
+        return response()->json(['message' => 'Settings processed successfully!']);
     }
 }

@@ -20,7 +20,7 @@
         <!-- Control Buttons -->
         <div class="button-group">
             <button id="startButton" class="start-button">Start Brewing</button>
-            <button id="pauseButton" class="pause-button">Pause Brewing</button>
+            <button id="resetButton" class="reset-button">Reset Brewing</button>
             <button id="stopButton" class="stop-button">Stop Brewing</button>
             <button class="report-button">Generate Report</button>
             <button class="history-button">View Batch History</button>
@@ -28,14 +28,14 @@
 
         <!-- Dashboard Sections -->
         <div class="dashboard-section">
-            <div class="box"> 
+            <div class="box">
                 <h3>Current Brewing Status</h3>
                 <p id="brewingStatus">
                 <span class="status-icon">&#128345;</span> <!-- Clock emoji as a placeholder icon -->
                 <span id="statusMessageText">Live status of the ongoing brewing process will be displayed here.</span>
                 </p>
                 </div>
-                
+
             <!-- <div class="box">
                 <h3>Upcoming Batches</h3>
                 <p>Details about upcoming batches, scheduled timings, and ingredients will be shown here.</p>
@@ -137,7 +137,7 @@ function handleButtonClick(button, url, statusText, statusClass) {
     handleButtonClick(this, "http://localhost:8080/api/start", "Brewing process started successfully!", "status-started");
     });
 
-    document.getElementById("pauseButton").addEventListener("click", function () {
+    document.getElementById("resetButton").addEventListener("click", function () {
     handleButtonClick(this, "http://localhost:8080/api/pause", "Brewing process paused.", "status-paused");
     });
 

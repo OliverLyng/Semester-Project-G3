@@ -52,84 +52,6 @@
     </div>
 
     <script>
-        // document.addEventListener("DOMContentLoaded", () => {
-        //     const beerTypeInput = document.getElementById("beerType");
-        //     const speedInput = document.getElementById("speed");
-        //     const amountInput = document.getElementById("amount");
-        //     const validateButton = document.getElementById("validateSettings");
-        //     const validationMessage = document.getElementById("validationMessage");
-        //
-        //     // Valid speed ranges for each beer type
-        //     const validRanges = {
-        //         Pilsner: { min: 0, max: 600 },
-        //         Wheat: { min: 0, max: 300 },
-        //         IPA: { min: 0, max: 150 },
-        //         Stout: { min: 0, max: 200 },
-        //         Ale: { min: 0, max: 100 },
-        //         AlcoholFree: { min: 0, max: 125 },
-        //     };
-        //
-        //     // Update speed input placeholder and range dynamically based on beer type
-        //     beerTypeInput.addEventListener("change", () => {
-        //         const beerType = beerTypeInput.value;
-        //         if (beerType && validRanges[beerType]) {
-        //             const range = validRanges[beerType];
-        //             speedInput.placeholder = `Enter Speed (${range.min} - ${range.max})`;
-        //             speedInput.min = range.min;
-        //             speedInput.max = range.max;
-        //         } else {
-        //             speedInput.placeholder = "Enter Speed";
-        //             speedInput.removeAttribute("min");
-        //             speedInput.removeAttribute("max");
-        //         }
-        //     });
-        //
-        //     // Prevent typing more than the max or less than the min speed
-        //     speedInput.addEventListener("input", () => {
-        //         const beerType = beerTypeInput.value;
-        //         if (beerType && validRanges[beerType]) {
-        //             const range = validRanges[beerType];
-        //             const value = parseInt(speedInput.value, 10);
-        //
-        //             if (value > range.max) {
-        //                 speedInput.value = range.max;
-        //             } else if (value < range.min) {
-        //                 speedInput.value = range.min;
-        //             }
-        //         }
-        //     });
-        //
-        //     // Validate inputs
-        //     function validateInputs() {
-        //         const beerType = beerTypeInput.value;
-        //         const speed = parseInt(speedInput.value, 10);
-        //         const amount = parseInt(amountInput.value, 10);
-        //
-        //         // Ensure all fields are filled
-        //         if (!beerType || isNaN(speed) || amountInput.value.trim() === "") {
-        //             validationMessage.textContent = "Please fill out all fields.";
-        //             validationMessage.className = "message error";
-        //             return;
-        //         }
-        //
-        //         // Validate speed based on beer type
-        //         const range = validRanges[beerType];
-        //         if (speed < range.min || speed > range.max) {
-        //             validationMessage.textContent = `Error: Speed for ${beerType} must be between ${range.min} and ${range.max}.`;
-        //             validationMessage.className = "message error";
-        //         } else {
-        //             validationMessage.textContent = "Settings are valid!";
-        //             validationMessage.className = "message success";
-        //
-        //         }
-        //     }
-        //
-        //     validateButton.addEventListener("click", validateInputs);
-        // });
-
-
-
-        // New script
 
         document.addEventListener("DOMContentLoaded", () => {
             const beerTypeInput = document.getElementById("beerType");
@@ -166,6 +88,7 @@
                 } else {
                     validationMessage.textContent = "Settings are valid!";
                     validationMessage.className = "message success";
+                    console.log(beerType,speed,amount);
 
                     // If validation is successful, send data to backend
                     sendDataToBackend({
@@ -177,7 +100,7 @@
             });
 
             function sendDataToBackend(data) {
-                fetch('/api/settings', {  // Change '/api/settings' to your actual endpoint
+                fetch('http://localhost:8080/api/settings', {  // Change '/api/settings' to your actual endpoint
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -185,9 +108,14 @@
                     body: JSON.stringify(data)
                 })
                     .then(response => response.json())
+                    .then(response => {
+                        // Log raw response text for debugging
+                        response.text().then(text => console.log("Raw response:", text));
+                        return response.json();  // Continue processing JSON as normal
+                    })
                     .then(data => {
                         console.log('Success:', data);
-                        validationMessage.textContent = "Data sent successfully!";
+                        validationMessage.textContent = "Data WAS sent successfully!";
                         validationMessage.className = "message success";
                     })
                     .catch((error) => {

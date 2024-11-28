@@ -34,6 +34,18 @@ public class Converter {
             default -> null;
         };
     }
+
+    public static Float showBeerType(String state) {
+        return switch (state) {
+            case "Pilsner" -> 0.0f;
+            case "Wheat" -> 1.0f;
+            case "IPA" -> 2.0f;
+            case "Stout" -> 3.0f;
+            case "Ale" -> 4.0f;
+            case "AlcoholFree" -> 5.0f;
+            default -> null;
+        };
+    }
     public static STOPPED_REASON showStopReason(int state) {
         return switch (state) {
             case 10 -> STOPPED_REASON.EMPTY_INVENTORY;

@@ -14,7 +14,7 @@ class BrewingController extends Controller
         return response()->json(['message' => 'Brewing process started successfully!']);
     }
 
-    public function pauseBrewing()
+    public function resetBrewing()
     {
         return response()->json(['message' => 'Brewing process paused successfully!']);
     }

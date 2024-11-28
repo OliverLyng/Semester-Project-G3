@@ -10,8 +10,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.json.JSONObject;
+
 
 import static org.example.logic.Operations.logger;
+import static org.example.utils.Converter.showBeerType;
 
 
 @RestController
@@ -58,7 +61,7 @@ public class BrewingController {
 
     // Stand-in for setting settings
     @PostMapping("/pause")
-    public ResponseEntity<String> pauseBrewing() throws Exception {
+    public ResponseEntity<String> resetBrewery() throws Exception {
         connection = OPCUAServerConnection.getInstance(endpointUrl);
         client = connection.getClient();
         if (client != null && connection.isConnected()) {
@@ -79,15 +82,15 @@ public class BrewingController {
                     logger.info("New value received for Produced Items: {}", dataValue);
                 });
                 operations = new Operations(client);
-                //operations.loadSettings();
-                System.out.println("Settings has been set!");
-                return ResponseEntity.ok("Settings has been set!");
+                operations.reset();
+                System.out.println("Status has been reset!");
+                return ResponseEntity.ok("Brewery has been reset!");
             } catch (Exception e) {
-                System.err.println("Error during settings start: " + e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during settings start: " + e.getMessage());
+                System.err.println("Error during reset: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during reset: " + e.getMessage());
             }
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to Error during settings start: Client is not connected.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to Error during reset: Client is not connected.");
         }
 
 
@@ -102,6 +105,7 @@ public class BrewingController {
             try {
                 operations = new Operations(client);
                 operations.stop();
+                System.out.println("Brewing process stopped successfully!");
                 return ResponseEntity.ok("Brewing process stopped successfully!");
             } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error stopping brewing process: " + e.getMessage());
@@ -130,20 +134,45 @@ public class BrewingController {
 
     @PostMapping("/settings")
     public ResponseEntity<String> getSettings(@RequestBody String payload) throws Exception {
-        System.out.println(payload);
+        connection = OPCUAServerConnection.getInstance(endpointUrl);
+        client = connection.getClient();
+        if (client != null && connection.isConnected()) {
+            try {
+                operations = new Operations(client);
+                System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!"+payload);
+
+                // Converting
 
 //
-//        Float beerType = 0.0f;
-//        Float amount = 1000.0f;
-//        Float speed = 300.0f;
-        Settings settings = new Settings(0.0f,1000.0f,300.0f);
+//                JSONObject json = new JSONObject(payload);
+//                System.out.println(json.getString("beerType"));
+//                System.out.println(json.optString("beerType"));
+//                Float beerType = showBeerType(json.getString("beerType"));
+//                System.out.println(beerType);
+//                if (beerType == null) {
+//                    beerType = 0.0f;
+//                }
 
-        operations.loadSettings(settings);
-//        operations.loadSettings(amount);
-//        operations.loadSettings(speed);
-        // Apply settings to the brewing process
-        return ResponseEntity.ok("Brewing settings configured successfully!");
+                JSONObject json = new JSONObject(payload);
+                String beerTypeStr = json.optString("beerType", "IPA");
+                System.out.println("Beer Type: " + beerTypeStr);
+                Float beerType = showBeerType(beerTypeStr);
+                System.out.println("Converted Beer Type: " + beerType);
+
+                float amount = json.optFloat("amount", 1000.0f);   // Default to 1000.0 if not present
+                float speed = json.optFloat("speed", 300.0f);      // Default to 300.0 if not present
+
+                System.out.println("Setting");
+                Settings settings = new Settings(beerType, amount, speed);
+                operations.loadSettings(settings);
+                System.out.println("Done");
+                return ResponseEntity.ok("Brewing settings configured successfully!");
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error stopping brewing process: " + e.getMessage());
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to stop brewing process: Client is not connected.");
+        }
     }
-
 
 }
