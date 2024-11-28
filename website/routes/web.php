@@ -22,3 +22,7 @@ Route::post('/start-brewing', [BrewingController::class, 'startBrewing']);
 Route::get('/inventory',[InventoryController::class,'show'])->name('inventory');
 
 
+use App\Http\Controllers\SettingsController;
+
+Route::view('/settings', 'settings')->name('settings');
+Route::post('/validate-settings', [SettingsController::class, 'validateSettings']);

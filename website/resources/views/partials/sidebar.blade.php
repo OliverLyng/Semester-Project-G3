@@ -23,4 +23,8 @@
         <img src="{{ asset('Images/report-icon.png') }}" alt="Reports Icon" class="icon"> 
         <a href="{{ route('reports') }}">Reports</a>
     </div>
+    <div class="menu-item {{ request()->is('settings') ? 'active' : '' }}">
+        <img src="{{ asset('Images/settings-icon.png') }}" alt="Settings Icon" class="icon"> 
+        <a href="{{ route('settings') }}">Settings</a>
+    </div>
 </div>
