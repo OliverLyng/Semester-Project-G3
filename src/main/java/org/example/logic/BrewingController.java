@@ -34,6 +34,7 @@ public class BrewingController {
     OpcUaClient client;
     SubscriptionService subscriptionService;
     NodeRepository nodeRepository;
+    BatchReport report = new BatchReport();
 
 
     @PostMapping("/start")
@@ -61,6 +62,16 @@ public class BrewingController {
                     return ResponseEntity.ok("Brewing process started successfully!");
                 }
                 if (states.equals(STATES.COMPLETE)) {
+
+                    /* 
+                    report.sendReportData(
+                                nodeRepository.readNodeValue(Nodes.produced).getValue().getValue().toString(),
+                                nodeRepository.readNodeValue(Nodes.cmdBatchId).getValue().getValue().toString(),
+                                nodeRepository.readNodeValue(Nodes.prodDefectiveCount).getValue().getValue().toString(),
+                                nodeRepository.readNodeValue(Nodes.cmdBeerType).getValue().getValue().toString()
+                                );
+                                */
+
                     return ResponseEntity.ok("Brewing has finished. " +
                             "BatchID:" + nodeRepository.readNodeValue(Nodes.cmdBatchId) +
                             "\nTotal Beers produced: " + nodeRepository.readNodeValue(Nodes.produced) +

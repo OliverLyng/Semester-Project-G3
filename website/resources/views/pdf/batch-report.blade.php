@@ -36,7 +36,7 @@
         <h1>Batch Report</h1>
     </header>
 
-    <h2>Batch ID: {{ $batch['id'] }}</h2>
+    <h2>Batch Number: {{ $batch['id'] }}</h2>
 
     <table>
         <tr>
@@ -49,19 +49,19 @@
         </tr>
         <tr>
             <td>Total Products</td>
-            <td>{{ $batch['totalProducts'] }}</td>
+            <td>{{ $batch['produced'] }}</td>
         </tr>
         <tr>
             <td>Defective Products</td>
-            <td>{{ $batch['defective'] }}</td>
+            <td>{{ $batch['defectiveProduce'] }}</td>
         </tr>
         <tr>
-            <td>Acceptable Products</td>
-            <td>{{ $batch['acceptable'] }}</td>
+            <td>Batch ID</td>
+            <td>{{ $batch['batchID'] }}</td>
         </tr>
         <tr>
-            <td>Time Used</td>
-            <td>{{ $batch['timeUsed'] }}</td>
+            <td>Date</td>
+            <td>{{ $batch['timestamps'] }}</td>
         </tr>
     </table>
 </body>
