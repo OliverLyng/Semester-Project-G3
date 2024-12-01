@@ -35,6 +35,7 @@ public class BrewingController {
     SubscriptionService subscriptionService;
     NodeRepository nodeRepository;
     BatchReport report = new BatchReport();
+    Inventory inventory = new Inventory();
 
 
     @PostMapping("/start")
@@ -62,16 +63,9 @@ public class BrewingController {
                     return ResponseEntity.ok("Brewing process started successfully!");
                 }
                 if (states.equals(STATES.COMPLETE)) {
-
-                    /* 
-                    report.sendReportData(
-                                nodeRepository.readNodeValue(Nodes.produced).getValue().getValue().toString(),
-                                nodeRepository.readNodeValue(Nodes.cmdBatchId).getValue().getValue().toString(),
-                                nodeRepository.readNodeValue(Nodes.prodDefectiveCount).getValue().getValue().toString(),
-                                nodeRepository.readNodeValue(Nodes.cmdBeerType).getValue().getValue().toString()
-                                );
-                                */
-
+                    report.main(null);
+                    inventory.main(null);
+                    
                     return ResponseEntity.ok("Brewing has finished. " +
                             "BatchID:" + nodeRepository.readNodeValue(Nodes.cmdBatchId) +
                             "\nTotal Beers produced: " + nodeRepository.readNodeValue(Nodes.produced) +
