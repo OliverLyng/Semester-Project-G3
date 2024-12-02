@@ -1,8 +1,10 @@
 package org.example.logic;
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
+import org.eclipse.milo.opcua.stack.core.UaException;
 import org.example.data.NodeRepository;
 import org.example.data.OPCUAServerConnection;
+import org.example.utils.Converter;
 import org.example.utils.Nodes;
 import org.example.utils.STATES;
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 import static org.example.logic.Operations.logger;
@@ -216,31 +219,80 @@ public class BrewingController {
         }
     }
 
-
     @GetMapping("/brew-status-stream")
     public SseEmitter streamBrewStatus() throws ExecutionException, InterruptedException {
-        final SseEmitter emitter = new SseEmitter();
+        final SseEmitter emitter = new SseEmitter(0L);
         // Assuming you have a service to handle subscription
         subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
             try {
-                emitter.send(SseEmitter.event().name("update").data(dataValue.getValue().getValue().toString()));
+                emitter.send(SseEmitter.event().name("produced").data(dataValue.getValue().getValue().toString()));
             } catch (IOException e) {
                 emitter.completeWithError(e);
-                return;
             }
         });
-        emitter.onCompletion(() -> {
+        subscriptionService.subscribeToNode(Nodes.temperature, dataValue -> {
             try {
-                subscriptionService.unsubscribeNode(Nodes.produced);
-            } catch (ExecutionException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
+                emitter.send(SseEmitter.event().name("temperature").data(dataValue.getValue().getValue().toString()));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        });
+        subscriptionService.subscribeToNode(Nodes.humidity, dataValue -> {
+            try {
+                emitter.send(SseEmitter.event().name("humidity").data(dataValue.getValue().getValue().toString()));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        });
+        subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
+            try {
+//                String beer = showBeerType(Float.parseFloat(dataValue.getValue().getValue().toString()));
+//                assert beer != null;
+//                System.out.println("!!!%%%####"+ beer);
+                emitter.send(SseEmitter.event().name("state")
+                        .data(Objects.requireNonNull(
+                                Converter.showState(
+                                        Integer.parseInt(nodeRepository.readNodeValue(
+                                                Nodes.stateCurrent).getValue().getValue().toString())))));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            } catch (UaException e) {
                 throw new RuntimeException(e);
             }
         });
-        emitter.onTimeout(emitter::complete);
-        return emitter;
 
+        emitter.onCompletion(emitter::complete);
+        emitter.onTimeout(emitter::complete);
+
+        return emitter;
     }
+
+
+//
+//    @GetMapping("/brew-status-stream")
+//    public SseEmitter streamBrewStatus() throws ExecutionException, InterruptedException {
+//        final SseEmitter emitter = new SseEmitter();
+//        // Assuming you have a service to handle subscription
+//        subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
+//            try {
+//                emitter.send(SseEmitter.event().name("update").data(dataValue.getValue().getValue().toString()));
+//            } catch (IOException e) {
+//                emitter.completeWithError(e);
+//                return;
+//            }
+//        });
+//        emitter.onCompletion(() -> {
+//            try {
+//                subscriptionService.unsubscribeNode(Nodes.produced);
+//            } catch (ExecutionException e) {
+//                throw new RuntimeException(e);
+//            } catch (InterruptedException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
+//        emitter.onTimeout(emitter::complete);
+//        return emitter;
+//
+//    }
 
 }

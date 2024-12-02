@@ -51,16 +51,19 @@
 
     <div class="box" id="brewStatus">
         <br>
-        <h3>Brew Status Updates</h3>
+        <h3 id="producedId">Produced</h3>
+        <h3 id="temperatureId">Temperature</h3>
+        <h3 id="humidityId">Humility</h3>
+        <h3 id="stateId">Current state</h3>
         <script>
             // Create a new EventSource instance to connect to the SSE endpoint
             const evtSource = new EventSource('http://127.0.0.1:8080/api/brew-status-stream');
 
             // Handle messages received from the server
-            evtSource.onmessage = function (event) {
-                const data = JSON.parse(event.data); // Parse the JSON data received
-                document.getElementById('brewStatus').innerHTML = data;
-            };
+            // evtSource.onmessage = function (event) {
+            //     const data = JSON.parse(event.data); // Parse the JSON data received
+            //     document.getElementById('producedId').innerHTML = data;
+            // };
 
             // Handle any errors that occur
             evtSource.onerror = function (event) {
@@ -69,11 +72,29 @@
             };
 
             // Optionally handle specific named events if your server sends them
-            evtSource.addEventListener('update', function (event) {
+            evtSource.addEventListener('produced', function (event) {
                 const data = JSON.parse(event.data); // Assuming JSON data is sent
-                console.log("Update received:", data);
-                document.getElementById('brewStatus').innerHTML = "Produced: " + data;
+                console.log("Produced amount:", data);
+                document.getElementById('producedId').innerHTML = "Produced: " + data;
             });
+            evtSource.addEventListener('temperature', function(event) {
+                const data = JSON.parse(event.data);
+                console.log("Temperature amount:", data);
+                document.getElementById('temperatureId').innerHTML = "Temperature: " + data + "°C";
+            });
+
+            evtSource.addEventListener('humidity', function(event) {
+                const data = JSON.parse(event.data);
+                console.log("Humidity amount:", data);
+                document.getElementById('humidityId').innerHTML = "Humidity: " + data + "%";
+            });
+
+            evtSource.addEventListener('state', function(event) {
+                const data = JSON.parse(event.data);
+                console.log("State amount:", data);
+                document.getElementById('stateId').innerHTML = "State: " + data;
+            });
+
         </script>
     </div>
     <!--************************************************************************-->
