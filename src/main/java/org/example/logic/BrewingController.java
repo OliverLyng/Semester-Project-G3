@@ -56,7 +56,9 @@ public class BrewingController {
         nodeRepository = new NodeRepository(client);
         int beerTypeInt = (Math.round(Float.parseFloat(nodeRepository.readNodeValue(Nodes.cmdBeerType).getValue().getValue().toString())));
         String beerType = "Beer Type: " + showBeerType(beerTypeInt);
+        String beer = showBeerType(beerTypeInt).toString(); // For report
         String amount = "Amount: " + nodeRepository.readNodeValue(Nodes.cmdAmountOfBeer).getValue().getValue().toString();
+        String produced = nodeRepository.readNodeValue(Nodes.cmdAmountOfBeer).getValue().getValue().toString(); // For report
         String speed = "Speed: " + nodeRepository.readNodeValue(Nodes.cmdMachSpeed).getValue().getValue().toString();
         final String[] defect = {"Defect: "};
         if (client != null && connection.isConnected()) {
@@ -73,9 +75,9 @@ public class BrewingController {
 
                             BatchReport batchReport = new BatchReport();
                             batchReport.sendReportData(
-                                    amount,
+                                    produced,
                                     nodeRepository.readNodeValue(Nodes.prodDefectiveCount).getValue().getValue().toString(),
-                                    beerType);
+                                    beer);
                             resetBrewery();
                         }
 

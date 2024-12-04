@@ -115,14 +115,12 @@ public class BatchReport {
             client = serverConnection.connect();
             subscriptionService = new SubscriptionService(client);
             CompletableFuture<DataValue> producedFuture = subscriptionService.readNodeAsync(Nodes.produced);
-            CompletableFuture<DataValue> batchIDFuture = subscriptionService.readNodeAsync(Nodes.cmdBatchId);
             CompletableFuture<DataValue> defectiveProduceFuture = subscriptionService.readNodeAsync(Nodes.prodDefectiveCount);
             CompletableFuture<DataValue> productTypeFuture = subscriptionService.readNodeAsync(Nodes.cmdBeerType);
 
-            CompletableFuture.allOf(producedFuture, batchIDFuture, defectiveProduceFuture, productTypeFuture).thenRun(() -> {
+            CompletableFuture.allOf(producedFuture, defectiveProduceFuture, productTypeFuture).thenRun(() -> {
                 try {
                     String produced = producedFuture.get().getValue().toString();
-                    String batchID = batchIDFuture.get().getValue().toString();
                     String defectiveProduce = defectiveProduceFuture.get().getValue().toString();
                     String productType = productTypeFuture.get().getValue().toString();
 
