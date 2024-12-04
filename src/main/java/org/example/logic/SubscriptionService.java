@@ -16,6 +16,7 @@ import org.eclipse.milo.opcua.stack.core.types.structured.ReadValueId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
@@ -79,6 +80,10 @@ public class SubscriptionService {
                 }
             }
         }
+    }
+    public CompletableFuture<DataValue> readNodeAsync(NodeId nodeId) {
+        // This method uses the client to read a node value asynchronously.
+        return client.readValue(0, TimestampsToReturn.Both, nodeId);
     }
 }
 

@@ -53,8 +53,10 @@
         <br>
         <h3 id="producedId">Produced</h3>
         <h3 id="temperatureId">Temperature</h3>
-        <h3 id="humidityId">Humility</h3>
+        <h3 id="humidityId">Humidity</h3>
+        <h3 id="defectId">Defect beers</h3>
         <h3 id="stateId">Current state</h3>
+
         <script>
             // Create a new EventSource instance to connect to the SSE endpoint
             const evtSource = new EventSource('http://127.0.0.1:8080/api/brew-status-stream');
@@ -76,17 +78,30 @@
                 const data = JSON.parse(event.data); // Assuming JSON data is sent
                 console.log("Produced amount:", data);
                 document.getElementById('producedId').innerHTML = "Produced: " + data;
+                document.getElementById('batchReportProduced').innerHTML = "Produced: " + data + " Bottles";
+
             });
             evtSource.addEventListener('temperature', function(event) {
                 const data = JSON.parse(event.data);
                 console.log("Temperature amount:", data);
                 document.getElementById('temperatureId').innerHTML = "Temperature: " + data + "°C";
+                document.getElementById('batchRepTemperature').innerHTML = "Temperature: " + data + "°C";
+
             });
 
             evtSource.addEventListener('humidity', function(event) {
                 const data = JSON.parse(event.data);
                 console.log("Humidity amount:", data);
                 document.getElementById('humidityId').innerHTML = "Humidity: " + data + "%";
+                document.getElementById('batchReportHumidity').innerHTML = "Humidity: " + data + "%";
+
+            });
+            evtSource.addEventListener('defective', function(event) {
+                const data = JSON.parse(event.data);
+                console.log("Defect beers:", data);
+                document.getElementById('defectId').innerHTML = "Defect beers: " + data;
+                document.getElementById('batchReportDefects').innerText = "Defects: " + data + " Bottles";
+
             });
 
             evtSource.addEventListener('state', function(event) {
@@ -107,23 +122,23 @@
             <ul>
                 <li>
                     <img src="{{ asset('Images/temperature-icon.png') }}" alt="Temperature Icon" class="inline-icon">
-                    <strong>Temperature:</strong> <span>22°C</span>
+                    <span id="batchRepTemperature">22°C</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/humidity-icon.png') }}" alt="Humidity Icon" class="inline-icon">
-                    <strong>Humidity:</strong> <span>45%</span>
+                    <span id="batchReportHumidity">45%</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/vibration-icon.png') }}" alt="Vibration Icon" class="inline-icon">
-                    <strong>Vibration:</strong> <span>Low</span>
+                    <strong>Vibration: </strong><span id="batchReportVibration">Low</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/production-icon.png') }}" alt="Produced Icon" class="inline-icon">
-                    <strong>Produced:</strong> <span>120 Bottles</span>
+                    <span id="batchReportProduced">120 Bottles</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/defect-icon.png') }}" alt="Defects Icon" class="inline-icon">
-                    <strong>Defects:</strong> <span>2 Bottles</span>
+                    <span id="batchReportDefects">2 Bottles</span>
                 </li>
             </ul>
         </div>

@@ -47,6 +47,7 @@ public class Converter {
         };
     }
 
+
     public static String showBeerType(Float state) {
         int stateAsInt = state.intValue();
         return switch (stateAsInt) {
@@ -59,6 +60,7 @@ public class Converter {
             default -> null;
         };
     }
+
     public static STOPPED_REASON showStopReason(int state) {
         return switch (state) {
             case 10 -> STOPPED_REASON.EMPTY_INVENTORY;

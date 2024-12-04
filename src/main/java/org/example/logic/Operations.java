@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 
 public class Operations {
@@ -28,6 +29,7 @@ public class Operations {
     static String endpointUrl = "opc.tcp://localhost:4840";
     static String endpointUrlRealMachine = "opc.tcp://192.168.0.122:4840";
     boolean needsReset = false;
+    boolean startStatusHandled = false;
 
     public Operations(OpcUaClient client) {
         this.client = client;
@@ -36,64 +38,64 @@ public class Operations {
 
 
 
-
-    public static void main(String[] args) throws Exception {
-        LogAppender.appendNewLineToLog(); // Appends a newline at the start of each run
-        logger.info("Starting Program");
-
-        OPCUAServerConnection serverConnection = null;
-        OpcUaClient client = null;
-        try {
-            serverConnection = OPCUAServerConnection.getInstance(endpointUrl);
-            client = serverConnection.connect();
-            SubscriptionService subscriptionService = new SubscriptionService(client);
-            NodeRepository nodeRepository = new NodeRepository(client);
-
-            Operations operator = new Operations(client);
-
-            // Subscribe to changes on status
-            subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
-                System.out.println("New value received for Current State: " + dataValue);
-                logger.info("New value received for Current State: {}", dataValue);
-            });
-            // Subscribe to changes on produced items
-            subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
-                System.out.println("New value received for Produced Items: " + dataValue);
-                logger.info("New value received for Produced Items: {}", dataValue);
-            });
-
-
-
-            //operator.reset(client);
-            // Out commented. Trying to get settings from web.
-            // operator.loadSettings();
-            STATES states = operator.checkStatus();
-
-            operator.handleStartStatus(states);
-            if (operator.needsReset) {
-                operator.reset();
-            }
-            operator.execute(client);
-
-
-
-            // Maybe?? Keep the application running to continue receiving updates
-            //Thread.sleep(Long.MAX_VALUE);
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error(String.valueOf(e));
-        } finally {
-            if (client != null) {
-                try {
-                    client.disconnect().get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    logger.error(String.valueOf(e));
-
-                }
-            }
-        }
-    }
+//
+//    public static void main(String[] args) throws Exception {
+//        LogAppender.appendNewLineToLog(); // Appends a newline at the start of each run
+//        logger.info("Starting Program");
+//        OPCUAServerConnection serverConnection = null;
+//        OpcUaClient client = null;
+//        try {
+//            serverConnection = OPCUAServerConnection.getInstance(endpointUrl);
+//            client = serverConnection.connect();
+//            SubscriptionService subscriptionService = new SubscriptionService(client);
+//            NodeRepository nodeRepository = new NodeRepository(client);
+//
+//            Operations operator = new Operations(client);
+//
+//            // Subscribe to changes on status
+//            subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
+//
+//                System.out.println("New value received for Current State: " + dataValue);
+//                logger.info("New value received for Current State: {}", dataValue);
+//            });
+//            // Subscribe to changes on produced items
+//            subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
+//                System.out.println("New value received for Produced Items: " + dataValue);
+//                logger.info("New value received for Produced Items: {}", dataValue);
+//            });
+//
+//
+//
+//            //operator.reset(client);
+//            // Out commented. Trying to get settings from web.
+//            // operator.loadSettings();
+//            STATES states = operator.checkStatus();
+//
+//            operator.handleStartStatus(states);
+//            if (operator.needsReset) {
+//                operator.reset();
+//            }
+//            operator.execute(client);
+//
+//
+//
+//            // Maybe?? Keep the application running to continue receiving updates
+//            //Thread.sleep(Long.MAX_VALUE);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            logger.error(String.valueOf(e));
+//        } finally {
+//            if (client != null) {
+//                try {
+//                    client.disconnect().get();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    logger.error(String.valueOf(e));
+//
+//                }
+//            }
+//        }
+//    }
 
 
     public void reset() throws Exception {
@@ -101,21 +103,42 @@ public class Operations {
         logger.info("In Reset");
         nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(1));
         nodeRepository.writeNodeValue (Nodes.cmdChange, new Variant(true));
-//        client.writeValue(Nodes.cntrlCmd, DataValue.valueOnly(new Variant(1)));
-//        client.writeValue(Nodes.cmdChange, DataValue.valueOnly(new Variant(true)));
-        System.out.println(Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString())));
+        needsReset = false;
+        //System.out.println(Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString())));
         logger.info("State: {}", Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString())));
     }
 
     public void clear() throws Exception {
-
+        // Needed only if you abort execution
         nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(5));
         nodeRepository.writeNodeValue (Nodes.cmdChange, new Variant(true));
 
     }
 
-    public void start() throws UaException, InterruptedException {
+    public void start() throws UaException, InterruptedException, ExecutionException {
         //starts the production
+
+        SubscriptionService subscriptionService = new SubscriptionService(client);
+        NodeRepository nodeRepository = new NodeRepository(client);
+
+        // Subscribe to changes on status
+        subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
+            try {
+                String status = dataValue.getValue().getValue().toString();
+                STATES currentState = checkStatus(status);
+                if (currentState != STATES.EXECUTE) {
+                    handleStoppedStatus(currentState);
+                    handleStartStatus(currentState);
+                    if (needsReset && !startStatusHandled) {
+                        reset();
+                    }
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            //System.out.println("New value received for Current State: " + dataValue);
+            logger.info("New value received for Current State: {}", dataValue);
+        });
         nodeRepository.writeNodeValue (Nodes.cntrlCmd, new Variant(2));
         nodeRepository.writeNodeValue(Nodes.cmdChange, new Variant(true));
     }
@@ -126,39 +149,39 @@ public class Operations {
         nodeRepository.writeNodeValue(Nodes.cmdChange, new Variant(true));
     }
 
-
-    public void execute(OpcUaClient client) throws Exception {
-
-        clear();
-        //variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
-        start();
-        STATES states = checkStatus();
-        if (states.equals(STATES.STOPPED)) {
-            handleStoppedStatus(states);
-            reset();
-            start();
-        }
-
-        STATES currentState = states;
-        System.out.println(currentState);
-        logger.info("State: {}",currentState);
-        while (states != STATES.COMPLETE) {
-            while (currentState == states) {
-                states = Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
-            }
-
-            System.out.println(states);
-            logger.info("State: {}",states);
-            currentState = states;
-
-            //operator.checkStatus(client);
-        }
-        // After production is finished write batch report
-
-        logger.info("Total Produced: {}", nodeRepository.readNodeValue(Nodes.prodProcessedCount));
-        logger.info("Defective: {}", nodeRepository.readNodeValue(Nodes.prodDefectiveCount));
-
-    }
+//
+//    public void execute(OpcUaClient client) throws Exception {
+//
+//        clear();
+//        //variableNodeState = client.getAddressSpace().getVariableNode(Nodes.stateCurrent);
+//        start();
+//        STATES states = checkStatus();
+//        if (states.equals(STATES.STOPPED)) {
+//            handleStoppedStatus(states);
+//            reset();
+//            start();
+//        }
+//
+//        STATES currentState = states;
+//        System.out.println(currentState);
+//        logger.info("State: {}",currentState);
+//        while (states != STATES.COMPLETE) {
+//            while (currentState == states) {
+//                states = Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
+//            }
+//
+//            System.out.println(states);
+//            logger.info("State: {}",states);
+//            currentState = states;
+//
+//            //operator.checkStatus(client);
+//        }
+//        // After production is finished write batch report
+//
+//        logger.info("Total Produced: {}", nodeRepository.readNodeValue(Nodes.prodProcessedCount));
+//        logger.info("Defective: {}", nodeRepository.readNodeValue(Nodes.prodDefectiveCount));
+//
+//    }
 
 
     public void loadSettings(Settings userSettings) throws Exception {
@@ -191,17 +214,20 @@ public class Operations {
         logger.info("Speed: {}", speed);
 
 
-        nodeRepository.writeNodeValue(Nodes.cmdBatchId, new Variant(14.0f));
-
-        String batchId = nodeRepository.readNodeValue(Nodes.cmdBatchId).getValue().getValue().toString();
-        System.out.println("Batch ID: " + batchId);
-        logger.info("Batch ID: {}", batchId);
+        //nodeRepository.writeNodeValue(Nodes.cmdBatchId, new Variant(14.0f));
+//
+//        String batchId = nodeRepository.readNodeValue(Nodes.cmdBatchId).getValue().getValue().toString();
+//        System.out.println("Batch ID: " + batchId);
+//        logger.info("Batch ID: {}", batchId);
     }
 
 
     public void handleStartStatus(STATES state) {
-        if (state.equals(STATES.STOPPED)) {
+        if (state.equals(STATES.STOPPED) || state.equals(STATES.COMPLETE)) {
             needsReset = true;
+            startStatusHandled = true;
+            // Handle this once.
+            // Can start from STATES.COMPLETE and do not reset again after completing.
         }
     }
 
@@ -238,6 +264,10 @@ public class Operations {
     }
     public STATES checkStatus() throws Exception {
         return Converter.showState(Integer.parseInt(nodeRepository.readNodeValue(Nodes.stateCurrent).getValue().getValue().toString()));
+
+    }
+    public STATES checkStatus(String str) throws Exception {
+        return Converter.showState(Integer.parseInt(str));
 
     }
 }
