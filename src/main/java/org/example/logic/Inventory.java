@@ -3,6 +3,7 @@ package org.example.logic;
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.example.data.NodeRepository;
 import org.example.data.OPCUAServerConnection;
+import org.example.utils.EndpointUrl;
 import org.example.utils.Nodes;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +18,8 @@ import org.slf4j.LoggerFactory;
 public class Inventory {
 
     SubscriptionService subscriptionService;
-    static String endpointUrl = "opc.tcp://localhost:4840";
+    static String endpointUrl = EndpointUrl.getEndpointUrl();
+    //static String endpointUrl = "opc.tcp://localhost:4840";
     Operations operations;
     OPCUAServerConnection connection;
     OpcUaClient client;

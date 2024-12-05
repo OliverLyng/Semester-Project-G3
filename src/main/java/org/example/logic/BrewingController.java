@@ -5,6 +5,7 @@ import org.eclipse.milo.opcua.stack.core.UaException;
 import org.example.data.NodeRepository;
 import org.example.data.OPCUAServerConnection;
 import org.example.utils.Converter;
+import org.example.utils.EndpointUrl;
 import org.example.utils.Nodes;
 import org.example.utils.STATES;
 import org.slf4j.Logger;
@@ -34,7 +35,8 @@ import org.example.logic.BatchReport;
 
 
 public class BrewingController {
-    static String endpointUrl = "opc.tcp://localhost:4840";
+    static String endpointUrl = EndpointUrl.getEndpointUrl();
+    //static String endpointUrl = "opc.tcp://localhost:4840";
     private static final Logger logger = LoggerFactory.getLogger(Operations.class);
     private final JsonComponentModule jsonComponentModule;
     Operations operations;

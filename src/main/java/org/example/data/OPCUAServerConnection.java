@@ -11,19 +11,20 @@ import org.eclipse.milo.opcua.stack.core.util.EndpointUtil;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import org.example.utils.EndpointUrl;
 
 public class OPCUAServerConnection {
     private static OPCUAServerConnection instance;
     private OpcUaClient client;
     private final String endpointUrl;
     private boolean isConnected = false;
-    private String selectedEndpointMachine = "192.168.0.122";
-    private String getSelectedEndpointSimulation = "localhost";
+    //private String selectedEndpointMachine = "192.168.0.122";
+    //private String getSelectedEndpointSimulation = "localhost";
 
+    String selectedEndpointMachine = EndpointUrl.getSelectedEndpoint();
     private OPCUAServerConnection(String endpointUrl) {
         this.endpointUrl = endpointUrl;
     }
-
     public static synchronized OPCUAServerConnection getInstance(String endpointUrl) {
         if (instance == null) {
             instance = new OPCUAServerConnection(endpointUrl);
@@ -39,6 +40,7 @@ public class OPCUAServerConnection {
                     disconnect();
                 }
 
+
                 // Discover endpoints using the provided URL
                 List<EndpointDescription> endpoints = DiscoveryClient.getEndpoints(endpointUrl).get();
 
@@ -49,7 +51,7 @@ public class OPCUAServerConnection {
                         .orElseThrow(() -> new Exception("No 'No Security' endpoints found"));
 
                 // Update the endpoint URL to ensure it matches the local configuration
-                EndpointDescription updatedEndpoint = EndpointUtil.updateUrl(selectedEndpoint, getSelectedEndpointSimulation, 4840);
+                EndpointDescription updatedEndpoint = EndpointUtil.updateUrl(selectedEndpoint, selectedEndpointMachine, 4840);
 
                 // Configure the client
                 OpcUaClientConfig config = OpcUaClientConfig.builder()

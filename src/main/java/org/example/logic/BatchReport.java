@@ -89,9 +89,8 @@ package org.example.logic;
 
 
 import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
-import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.example.data.OPCUAServerConnection;
-import org.example.utils.Nodes;
+import org.example.utils.EndpointUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -99,46 +98,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 public class BatchReport {
-    private static final Logger logger = LoggerFactory.getLogger(BatchReport.class);
-
-    public static void main(String[] args) {
-        OPCUAServerConnection serverConnection;
-        OpcUaClient client;
-        SubscriptionService subscriptionService;
-
-        try {
-            serverConnection = OPCUAServerConnection.getInstance("opc.tcp://localhost:4840");
-            client = serverConnection.connect();
-            subscriptionService = new SubscriptionService(client);
-            CompletableFuture<DataValue> producedFuture = subscriptionService.readNodeAsync(Nodes.produced);
-            CompletableFuture<DataValue> defectiveProduceFuture = subscriptionService.readNodeAsync(Nodes.prodDefectiveCount);
-            CompletableFuture<DataValue> productTypeFuture = subscriptionService.readNodeAsync(Nodes.cmdBeerType);
-
-            CompletableFuture.allOf(producedFuture, defectiveProduceFuture, productTypeFuture).thenRun(() -> {
-                try {
-                    String produced = producedFuture.get().getValue().toString();
-                    String defectiveProduce = defectiveProduceFuture.get().getValue().toString();
-                    String productType = productTypeFuture.get().getValue().toString();
-
-                    sendReportData(produced, defectiveProduce, productType);
-                } catch (InterruptedException | ExecutionException e) {
-                    logger.error("Failed to retrieve values", e);
-                }
-            }).exceptionally(ex -> {
-                logger.error("Error in reading values", ex);
-                return null;
-            });
-
-        } catch (Exception e) {
-            logger.error("Error during settings start: " + e.getMessage());
-        }
-    }
-
-
 
     public static void sendReportData(String produced, String defectiveProduce, String productType) {
         RestTemplate restTemplate = new RestTemplate();

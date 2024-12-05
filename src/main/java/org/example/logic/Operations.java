@@ -26,8 +26,9 @@ public class Operations {
     private OpcUaClient client;
     Settings settings;
     UaVariableNode variableNodeState;
-    static String endpointUrl = "opc.tcp://localhost:4840";
-    static String endpointUrlRealMachine = "opc.tcp://192.168.0.122:4840";
+    String selectedEndpointMachine = EndpointUrl.getEndpointUrl();
+    //static String endpointUrl = "opc.tcp://localhost:4840";
+    //static String endpointUrlRealMachine = "opc.tcp://192.168.0.122:4840";
     boolean needsReset = false;
     boolean startStatusHandled = false;
 
