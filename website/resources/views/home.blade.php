@@ -50,67 +50,10 @@
 
 
     <div class="box" id="brewStatus">
-        <br>
-        <h3 id="producedId">Produced</h3>
-        <h3 id="temperatureId">Temperature</h3>
-        <h3 id="humidityId">Humidity</h3>
-        <h3 id="defectId">Defect beers</h3>
+
         <h3 id="stateId">Current state</h3>
 
-        <script>
-            // Create a new EventSource instance to connect to the SSE endpoint
-            const evtSource = new EventSource('http://127.0.0.1:8080/api/brew-status-stream');
 
-            // Handle messages received from the server
-            // evtSource.onmessage = function (event) {
-            //     const data = JSON.parse(event.data); // Parse the JSON data received
-            //     document.getElementById('producedId').innerHTML = data;
-            // };
-
-            // Handle any errors that occur
-            evtSource.onerror = function (event) {
-                console.error("EventSource failed:", event);
-                evtSource.close(); // Close the connection if errors occur
-            };
-
-            // Optionally handle specific named events if your server sends them
-            evtSource.addEventListener('produced', function (event) {
-                const data = JSON.parse(event.data); // Assuming JSON data is sent
-                console.log("Produced amount:", data);
-                document.getElementById('producedId').innerHTML = "Produced: " + data;
-                document.getElementById('batchReportProduced').innerHTML = "Produced: " + data + " Bottles";
-
-            });
-            evtSource.addEventListener('temperature', function(event) {
-                const data = JSON.parse(event.data);
-                console.log("Temperature amount:", data);
-                document.getElementById('temperatureId').innerHTML = "Temperature: " + data + "°C";
-                document.getElementById('batchRepTemperature').innerHTML = "Temperature: " + data + "°C";
-
-            });
-
-            evtSource.addEventListener('humidity', function(event) {
-                const data = JSON.parse(event.data);
-                console.log("Humidity amount:", data);
-                document.getElementById('humidityId').innerHTML = "Humidity: " + data + "%";
-                document.getElementById('batchReportHumidity').innerHTML = "Humidity: " + data + "%";
-
-            });
-            evtSource.addEventListener('defective', function(event) {
-                const data = JSON.parse(event.data);
-                console.log("Defect beers:", data);
-                document.getElementById('defectId').innerHTML = "Defect beers: " + data;
-                document.getElementById('batchReportDefects').innerText = "Defects: " + data + " Bottles";
-
-            });
-
-            evtSource.addEventListener('state', function(event) {
-                const data = JSON.parse(event.data);
-                console.log("State amount:", data);
-                document.getElementById('stateId').innerHTML = "State: " + data;
-            });
-
-        </script>
     </div>
     <!--************************************************************************-->
 
@@ -129,10 +72,6 @@
                     <span id="batchReportHumidity">45%</span>
                 </li>
                 <li>
-                    <img src="{{ asset('Images/vibration-icon.png') }}" alt="Vibration Icon" class="inline-icon">
-                    <strong>Vibration: </strong><span id="batchReportVibration">Low</span>
-                </li>
-                <li>
                     <img src="{{ asset('Images/production-icon.png') }}" alt="Produced Icon" class="inline-icon">
                     <span id="batchReportProduced">120 Bottles</span>
                 </li>
@@ -148,23 +87,23 @@
             <ul>
                 <li>
                     <img src="{{ asset('Images/barley-icon.png') }}" alt="Barley Icon" class="inline-icon">
-                    <strong>Barley:</strong> <span>75%</span>
+                    <strong>Barley:</strong> <span id="barley">100%</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/hops-icon.png') }}" alt="Hops Icon" class="inline-icon">
-                    <strong>Hops:</strong> <span>60%</span>
+                    <strong>Hops:</strong> <span id="hops">100%</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/malt-icon.png') }}" alt="Malt Icon" class="inline-icon">
-                    <strong>Malt:</strong> <span>80%</span>
+                    <strong>Malt:</strong> <span id="malt">100%</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/wheat-icon.png') }}" alt="Wheat Icon" class="inline-icon">
-                    <strong>Wheat:</strong> <span>50%</span>
+                    <strong>Wheat:</strong> <span id="wheat">100%</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/yeast-icon.png') }}" alt="Yeast Icon" class="inline-icon">
-                    <strong>Yeast:</strong> <span>90%</span>
+                    <strong>Yeast:</strong> <span id="yeast">100%</span>
                 </li>
             </ul>
         </div>
@@ -173,6 +112,14 @@
 
 <!-- JavaScript -->
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Initial connection message
+        updateStatusMessage("Connecting...", "status-connecting");
+
+        // Automatically call the reset function on page load
+        const resetButton = document.getElementById("resetButton");
+        handleButtonClick(resetButton, "http://localhost:8080/api/reset", "Ready to brew", "status-ready");
+    });
     function updateStatusMessage(text, statusClass) {
         const statusMessageText = document.getElementById("statusMessageText");
         const brewingStatus = document.getElementById("brewingStatus");
@@ -207,12 +154,93 @@
     });
 
     document.getElementById("resetButton").addEventListener("click", function () {
-        handleButtonClick(this, "http://localhost:8080/api/pause", "Brewing process paused.", "status-paused");
+        handleButtonClick(this, "http://localhost:8080/api/reset", "Ready to brew.", "status-paused");
     });
 
     document.getElementById("stopButton").addEventListener("click", function () {
         handleButtonClick(this, "http://localhost:8080/api/stop", "Brewing process stopped.", "status-stopped");
     });
+    // Create a new EventSource instance to connect to the SSE endpoint
+    const evtSource = new EventSource('http://127.0.0.1:8080/api/brew-status-stream');
+
+
+    // Handle any errors that occur
+    evtSource.onerror = function (event) {
+        console.error("EventSource failed:", event);
+        evtSource.close(); // Close the connection if errors occur
+    };
+
+    // Optionally handle specific named events if your server sends them
+    evtSource.addEventListener('produced', function (event) {
+        const data = JSON.parse(event.data); // Assuming JSON data is sent
+        console.log("Produced amount:", data);
+        document.getElementById('batchReportProduced').innerHTML = "Produced: " + data + " Bottles";
+
+    });
+    evtSource.addEventListener('temperature', function (event) {
+        const data = JSON.parse(event.data);
+        console.log("Temperature amount:", data);
+        document.getElementById('batchRepTemperature').innerHTML = "Temperature: " + data + "°C";
+
+    });
+
+    evtSource.addEventListener('humidity', function (event) {
+        const data = JSON.parse(event.data);
+        console.log("Humidity amount:", data);
+        document.getElementById('batchReportHumidity').innerHTML = "Humidity: " + data + "%";
+
+    });
+    evtSource.addEventListener('defective', function (event) {
+        const data = JSON.parse(event.data);
+        console.log("Defect beers:", data);
+        document.getElementById('batchReportDefects').innerText = "Defects: " + data + " Bottles";
+
+    });
+
+    evtSource.addEventListener('state', function (event) {
+        const data = JSON.parse(event.data);
+        console.log("State amount:", data);
+        document.getElementById('stateId').innerHTML = "State: " + data;
+    });
+
+    // Ingredients ******************
+
+    evtSource.addEventListener('hops', function (event) {
+        const data = JSON.parse(event.data);
+        console.log("Humidity amount:", data);
+        percent = (data/35000) * 100
+        document.getElementById('hops').innerHTML = percent.toFixed(2) + "%";
+
+    });
+    evtSource.addEventListener('barley', function (event) {
+        const data = JSON.parse(event.data);
+        console.log("Humidity amount:", data);
+        percent = (data/35000) * 100
+        document.getElementById('barley').innerHTML = percent.toFixed(2) + "%";
+
+    });
+    evtSource.addEventListener('wheat', function (event) {
+        const data = JSON.parse(event.data);
+        console.log("Humidity amount:", data);
+        percent = (data/35000) * 100
+        document.getElementById('wheat').innerHTML = percent.toFixed(2) + "%";
+
+    });
+    evtSource.addEventListener('malt', function (event) {
+        const data = JSON.parse(event.data);
+        console.log("Humidity amount:", data);
+        percent = (data/35000) * 100
+        document.getElementById('malt').innerHTML = percent.toFixed(2) + "%";
+
+    });
+    evtSource.addEventListener('yeast', function (event) {
+        const data = JSON.parse(event.data);
+        console.log("Humidity amount:", data);
+        percent = (data/35000) * 100
+        document.getElementById('yeast').innerHTML = percent.toFixed(2) + "%";
+
+    });
+
 
 </script>
 </body>

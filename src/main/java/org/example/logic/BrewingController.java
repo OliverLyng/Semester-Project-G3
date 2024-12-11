@@ -115,7 +115,7 @@ public class BrewingController {
     }
 
     // Stand-in for setting settings
-    @PostMapping("/pause")
+    @PostMapping("/reset")
     public ResponseEntity<String> resetBrewery() throws Exception {
         connection = OPCUAServerConnection.getInstance(endpointUrl);
         client = connection.getClient();
@@ -125,31 +125,30 @@ public class BrewingController {
                 subscriptionService = new SubscriptionService(client);
                 operations = new Operations(client);
 
-
-                // Subscribe to changes on status
-                subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
-                    //System.out.println("New value received for Current State: " + dataValue);
-                    logger.info("New value received for Current State: {}", dataValue);
-                });
-                // Subscribe to changes on produced items
-                subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
-                    //System.out.println("New value received for Produced Items: " + dataValue);
-                    logger.info("New value received for Produced Items: {}", dataValue);
-                });
-                subscriptionService.subscribeToNode(Nodes.statusRelativeHumidity, dataValue -> {
-                    //System.out.println("New value received for Current State: " + dataValue);
-                    logger.info("New value received for Current State: {}", dataValue);
-                });
-                // Subscribe to changes on produced items
-                subscriptionService.subscribeToNode(Nodes.statusTemperature, dataValue -> {
-                    //System.out.println("New value received for Produced Items: " + dataValue);
-                    logger.info("New value received for Produced Items: {}", dataValue);
-                });
-
+//
+//                // Subscribe to changes on status
+//                subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
+//                    //System.out.println("New value received for Current State: " + dataValue);
+//                    logger.info("New value received for Current State: {}", dataValue);
+//                });
+//                // Subscribe to changes on produced items
+//                subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
+//                    //System.out.println("New value received for Produced Items: " + dataValue);
+//                    logger.info("New value received for Produced Items: {}", dataValue);
+//                });
+//                subscriptionService.subscribeToNode(Nodes.statusRelativeHumidity, dataValue -> {
+//                    //System.out.println("New value received for Current State: " + dataValue);
+//                    logger.info("New value received for Current State: {}", dataValue);
+//                });
+//                // Subscribe to changes on produced items
+//                subscriptionService.subscribeToNode(Nodes.statusTemperature, dataValue -> {
+//                    //System.out.println("New value received for Produced Items: " + dataValue);
+//                    logger.info("New value received for Produced Items: {}", dataValue);
+//                });
+//
 
                 operations.reset();
-                System.out.println("Status has been reset!");
-                return ResponseEntity.ok("Brewery has been reset!");
+                return ResponseEntity.ok("Ready to brew!!");
             } catch (Exception e) {
                 System.err.println("Error during reset: " + e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error during reset: " + e.getMessage());
@@ -260,9 +259,6 @@ public class BrewingController {
         });
         subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
             try {
-//                String beer = showBeerType(Float.parseFloat(dataValue.getValue().getValue().toString()));
-//                assert beer != null;
-//                System.out.println("!!!%%%####"+ beer);
                 emitter.send(SseEmitter.event().name("state")
                         .data(Objects.requireNonNull(
                                 Converter.showState(
@@ -277,6 +273,48 @@ public class BrewingController {
         subscriptionService.subscribeToNode(Nodes.prodDefectiveCount, dataValue -> {
             try {
                 emitter.send(SseEmitter.event().name("defective").data(dataValue.getValue().getValue().toString()));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        });
+        subscriptionService.subscribeToNode(Nodes.barley, dataValue -> {
+            try {
+                emitter.send(SseEmitter.event().name("barley").data(dataValue.getValue().getValue().toString()));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        });
+        subscriptionService.subscribeToNode(Nodes.malt, dataValue -> {
+            try {
+                emitter.send(SseEmitter.event().name("malt").data(dataValue.getValue().getValue().toString()));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        });
+        subscriptionService.subscribeToNode(Nodes.yeast, dataValue -> {
+            try {
+                emitter.send(SseEmitter.event().name("yeast").data(dataValue.getValue().getValue().toString()));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        });
+        subscriptionService.subscribeToNode(Nodes.wheat, dataValue -> {
+            try {
+                emitter.send(SseEmitter.event().name("wheat").data(dataValue.getValue().getValue().toString()));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        });
+        subscriptionService.subscribeToNode(Nodes.wheat, dataValue -> {
+            try {
+                emitter.send(SseEmitter.event().name("wheat").data(dataValue.getValue().getValue().toString()));
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        });
+        subscriptionService.subscribeToNode(Nodes.hops, dataValue -> {
+            try {
+                emitter.send(SseEmitter.event().name("hops").data(dataValue.getValue().getValue().toString()));
             } catch (IOException e) {
                 emitter.completeWithError(e);
             }
