@@ -4,6 +4,7 @@ import org.eclipse.milo.opcua.sdk.client.OpcUaClient;
 import org.eclipse.milo.opcua.sdk.client.api.UaClient;
 import org.eclipse.milo.opcua.sdk.client.nodes.UaVariableNode;
 import org.example.utils.Converter;
+import org.example.utils.EndpointUrl;
 import org.example.utils.Nodes;
 import org.example.utils.STATES;
 
@@ -16,10 +17,11 @@ public class Status {
     UaVariableNode variableNodeState;
 
     static Status status;
-
+    static String endpointUrl = EndpointUrl.getEndpointUrl();
 
     public static void main(String[] args) throws Exception {
-        String endpointUrl = "opc.tcp://localhost:4840";  // Change to your server's URL
+
+        // Change to your server's URL
 
         // Build OPC-UA client
         OpcUaClient client = OpcUaClient.create(endpointUrl);

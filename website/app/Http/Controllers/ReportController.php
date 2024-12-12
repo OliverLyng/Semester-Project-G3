@@ -24,8 +24,9 @@ class ReportController extends Controller
 
     public function insertData(Request $request)
     {
+
         $batch = ReportModel::create($request->all());
-    
+        Log::info('Inserted Data TJEK TJEK: ', $batch->toArray());
         return response()->json($batch);
     }
 

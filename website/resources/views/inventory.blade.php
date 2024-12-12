@@ -34,7 +34,7 @@
                         <tr data-stock="{{ $item->quantity > 10 ? 'ok' : 'low' }}">
                             <td>
                                 <div class="ingredient-container">
-                                    <img src="{{ asset('Images/' . strtolower($item->name) . '-icon.png') }}" 
+                                    <img src="{{ asset('Images/' . strtolower($item->name) . '-icon.png') }}"
                                          alt="{{ $item->name }} Icon" class="ingredient-icon">
                                     <span>{{ $item->name }}</span>
                                 </div>
@@ -49,6 +49,7 @@
                             <td><button class="reorder-button">Reorder</button></td>
                         </tr>
                     @endforeach
+
                 </tbody>
             </table>
         </div>

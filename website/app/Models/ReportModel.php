@@ -16,7 +16,6 @@ class ReportModel extends Model
 
     protected $fillable = [
         'produced',
-        'batchID',
         'defectiveProduce',
         'productType'
     ];
