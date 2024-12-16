@@ -9,9 +9,7 @@ use App\Http\Controllers\SettingsController;
 
 
 
-Route::get('/', function () {
-    return view('home');
-})->name('dashboard'); // Home route as Dashboard
+Route::get('/', [BrewingController::class, 'dashboard'])->name('dashboard'); // Home route as Dashboard
 
 Route::view('/scheduling', 'scheduling')->name('scheduling');
 Route::view('/current_batch', 'current_batch')->name('current_batch');
@@ -33,5 +31,6 @@ Route::view('/settings', 'settings')->name('settings');
 // For reports category
 
 use App\Http\Controllers\ReportController;
-Route::get('/api/batches/{id}', [ReportController::class, 'getBatchReport']);
 Route::get('/report/pdf/{id}', [ReportController::class, 'generateBatchReport'])->name('report.pdf');
+// Define a route to display the reports page
+Route::get('/reports', [ReportController::class, 'showReports'])->name('reports.show');

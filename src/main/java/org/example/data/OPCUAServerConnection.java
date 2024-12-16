@@ -18,13 +18,13 @@ public class OPCUAServerConnection {
     private OpcUaClient client;
     private final String endpointUrl;
     private boolean isConnected = false;
-    //private String selectedEndpointMachine = "192.168.0.122";
-    //private String getSelectedEndpointSimulation = "localhost";
-
     String selectedEndpointMachine = EndpointUrl.getSelectedEndpoint();
+
+
     private OPCUAServerConnection(String endpointUrl) {
         this.endpointUrl = endpointUrl;
     }
+
     public static synchronized OPCUAServerConnection getInstance(String endpointUrl) {
         if (instance == null) {
             instance = new OPCUAServerConnection(endpointUrl);
@@ -39,7 +39,6 @@ public class OPCUAServerConnection {
                 if (client != null) {
                     disconnect();
                 }
-
 
                 // Discover endpoints using the provided URL
                 List<EndpointDescription> endpoints = DiscoveryClient.getEndpoints(endpointUrl).get();
@@ -109,24 +108,4 @@ public class OPCUAServerConnection {
         return isConnected;
     }
 
-//
-//    public OpcUaClient connect() throws Exception {
-//        if (client == null || !isConnected) {
-//            if (client != null) {
-//                disconnect();
-//            }
-//
-//            // Discover endpoints
-//            List<EndpointDescription> endpoints = DiscoveryClient.getEndpoints("opc.tcp://127.0.0.1:4840").get();
-//            EndpointDescription configPoint = EndpointUtil.updateUrl(endpoints.get(0), "127.0.0.1", 4840);
-//
-//            OpcUaClientConfigBuilder cfg = new OpcUaClientConfigBuilder();
-//            cfg.setEndpoint(configPoint);
-//
-//            this.client = OpcUaClient.create(cfg.build());
-//            client.connect().get(); // Connect to the server
-//            isConnected = true;
-//        }
-//        return client;
-//    }
 }

@@ -22,8 +22,8 @@
         <button id="startButton" class="start-button">Start Brewing</button>
         <button id="resetButton" class="reset-button">Reset Brewing</button>
         <button id="stopButton" class="stop-button">Stop Brewing</button>
-        <button class="report-button">Generate Report</button>
-        <button class="history-button">View Batch History</button>
+<!--        <button class="report-button">Generate Report</button>-->
+<!--        <button class="history-button">View Batch History</button>-->
     </div>
 
     <!-- Dashboard Sections -->
@@ -65,19 +65,19 @@
             <ul>
                 <li>
                     <img src="{{ asset('Images/temperature-icon.png') }}" alt="Temperature Icon" class="inline-icon">
-                    <span id="batchRepTemperature">22°C</span>
+                    <span id="batchRepTemperature"> - °C</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/humidity-icon.png') }}" alt="Humidity Icon" class="inline-icon">
-                    <span id="batchReportHumidity">45%</span>
+                    <span id="batchReportHumidity"> - %</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/production-icon.png') }}" alt="Produced Icon" class="inline-icon">
-                    <span id="batchReportProduced">120 Bottles</span>
+                    <span id="batchReportProduced"> - Bottles</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/defect-icon.png') }}" alt="Defects Icon" class="inline-icon">
-                    <span id="batchReportDefects">2 Bottles</span>
+                    <span id="batchReportDefects"> - Bottles</span>
                 </li>
             </ul>
         </div>
@@ -87,23 +87,23 @@
             <ul>
                 <li>
                     <img src="{{ asset('Images/barley-icon.png') }}" alt="Barley Icon" class="inline-icon">
-                    <strong>Barley:</strong> <span id="barley">100%</span>
+                    <strong>Barley:</strong> <span id="barley"> - %</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/hops-icon.png') }}" alt="Hops Icon" class="inline-icon">
-                    <strong>Hops:</strong> <span id="hops">100%</span>
+                    <strong>Hops:</strong> <span id="hops"> - %</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/malt-icon.png') }}" alt="Malt Icon" class="inline-icon">
-                    <strong>Malt:</strong> <span id="malt">100%</span>
+                    <strong>Malt:</strong> <span id="malt"> - %</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/wheat-icon.png') }}" alt="Wheat Icon" class="inline-icon">
-                    <strong>Wheat:</strong> <span id="wheat">100%</span>
+                    <strong>Wheat:</strong> <span id="wheat"> - %</span>
                 </li>
                 <li>
                     <img src="{{ asset('Images/yeast-icon.png') }}" alt="Yeast Icon" class="inline-icon">
-                    <strong>Yeast:</strong> <span id="yeast">100%</span>
+                    <strong>Yeast:</strong> <span id="yeast"> - %</span>
                 </li>
             </ul>
         </div>
@@ -113,12 +113,22 @@
 <!-- JavaScript -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Initial connection message
-        updateStatusMessage("Connecting...", "status-connecting");
 
-        // Automatically call the reset function on page load
-        const resetButton = document.getElementById("resetButton");
-        handleButtonClick(resetButton, "http://localhost:8080/api/reset", "Ready to brew", "status-ready");
+        if (!sessionStorage.getItem('resetPerformed')) {
+
+
+            // Initial connection message
+            updateStatusMessage("Connecting...", "status-connecting");
+
+
+            // Automatically call the reset function on page load
+            const resetButton = document.getElementById("resetButton");
+            handleButtonClick(resetButton, "http://localhost:8080/api/reset", "Ready to brew", "status-ready");
+        }
+        else {
+            // Initial connection message
+            updateStatusMessage("Go to settings to choose beer-type, amount and speed ", "status-connecting");
+        }
     });
     function updateStatusMessage(text, statusClass) {
         const statusMessageText = document.getElementById("statusMessageText");
