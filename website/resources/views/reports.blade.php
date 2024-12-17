@@ -20,10 +20,9 @@
             <label for="batchID">Batch ID:</label>
             <select id="batchID" name="batchID">
                 <option value="">Select a Batch</option>
-                <!-- Example batch IDs -->
-                <option value="1">Batch 1</option>
-                <option value="2">Batch 2</option>
-                <option value="3">Batch 3</option>
+                @foreach ($batches as $batch)
+                <option value="{{ $batch->id }}">Batch {{ $batch->id }}</option>
+                @endforeach
             </select>
             <button id="generateReport" class="button">Generate</button>
             <button id="downloadPDF" class="button">Download PDF</button>
@@ -48,11 +47,11 @@
             </div>
 
             <!-- Charts -->
-            <div id="charts">
-                <h3>Temperature and Humidity Logs</h3>
-                <canvas id="temperatureChart"></canvas>
-                <canvas id="humidityChart" style="margin-top: 30px;"></canvas>
-            </div>
+<!--            <div id="charts">-->
+<!--                <h3>Temperature and Humidity Logs</h3>-->
+<!--                <canvas id="temperatureChart"></canvas>-->
+<!--                <canvas id="humidityChart" style="margin-top: 30px;"></canvas>-->
+<!--            </div>-->
         </div>
     </div>
 
@@ -61,46 +60,71 @@
             const generateReportButton = document.getElementById("generateReport");
             const batchIDSelect = document.getElementById("batchID");
             const batchDetailsBody = document.getElementById("batchDetailsBody");
-
-            // Example data for testing (replace this with real API calls)
-            const batchData = {
-                1: {
-                    batchID: 1,
-                    productType: "Pilsner",
-                    totalProducts: 1200,
-                    acceptable: 1150,
-                    defective: 50,
-                    timeInStates: {
-                        idle: "2 hours",
-                        production: "8 hours",
-                        cleaning: "1 hour",
-                    },
-                    temperatureLogs: [20, 21, 23, 22, 24, 23],
-                    humidityLogs: [45, 46, 50, 48, 47, 45],
-                },
-                // Add more batches here...
-            };
+            //
+            // // Example data for testing (replace this with real API calls)
+            // const batchData = {
+            //     1: {
+            //         batchID: 1,
+            //         productType: "Pilsner",
+            //         totalProducts: 1200,
+            //         acceptable: 1150,
+            //         defective: 50,
+            //         timeInStates: {
+            //             idle: "2 hours",
+            //             production: "8 hours",
+            //             cleaning: "1 hour",
+            //         },
+            //         temperatureLogs: [20, 21, 23, 22, 24, 23],
+            //         humidityLogs: [45, 46, 50, 48, 47, 45],
+            //     },
+            //     // Add more batches here...
+            // };
 
             // Generate the report
             generateReportButton.addEventListener("click", () => {
                 const batchID = batchIDSelect.value;
 
-                if (!batchID || !batchData[batchID]) {
-                    alert("Please select a valid batch!");
+                if (!batchID) {
+                    alert("Please select a batch!");
                     return;
                 }
 
-                const data = batchData[batchID];
-                generateBatchDetails(data);
-                generateCharts(data);
+
+                fetch(`/api/batches/${batchID}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data) {
+                            console.log("data is: "+ data.body);
+                            generateBatchDetails(data);
+                            //generateCharts(data);
+                        } else {
+                            alert("No data found for batch " + batchID);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert("An error occurred while fetching the batch details.");
+                    });
             });
+            //
+            //     const data = batchData[batchID];
+            //     generateBatchDetails(data);
+            //     generateCharts(data);
+            // });
 
             // Populate the batch details table
             function generateBatchDetails(data) {
+                let total = data.produced;
+                let totalNum = Number(total);
+                let defect = data.defectiveProduce;
+                let defectNum = Number(defect);
+
+
+                let acceptable = totalNum - defectNum;
                 batchDetailsBody.innerHTML = `
                     <tr>
                         <td>Batch ID</td>
-                        <td>${data.batchID}</td>
+                        <td>${data.id}</td>
                     </tr>
                     <tr>
                         <td>Product Type</td>
@@ -108,28 +132,17 @@
                     </tr>
                     <tr>
                         <td>Total Products</td>
-                        <td>${data.totalProducts}</td>
+                        <td>${totalNum}</td>
                     </tr>
                     <tr>
                         <td>Acceptable Products</td>
-                        <td>${data.acceptable}</td>
+                        <td>${acceptable}</td>
                     </tr>
                     <tr>
                         <td>Defective Products</td>
-                        <td>${data.defective}</td>
+                        <td>${data.defectiveProduce}</td>
                     </tr>
-                    <tr>
-                        <td>Time in Idle State</td>
-                        <td>${data.timeInStates.idle}</td>
-                    </tr>
-                    <tr>
-                        <td>Time in Production State</td>
-                        <td>${data.timeInStates.production}</td>
-                    </tr>
-                    <tr>
-                        <td>Time in Cleaning State</td>
-                        <td>${data.timeInStates.cleaning}</td>
-                    </tr>
+
                 `;
             }
 
