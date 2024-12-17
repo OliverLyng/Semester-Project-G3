@@ -10,7 +10,7 @@ use App\Http\Controllers\ReportController;
 
 
 
-Route::get('/batches/{id}', [ReportController::class, 'getBatchReport']);
+
 Route::post('/inventory', [InventoryController::class, 'store']);
 Route::put('/update-inventory',[InventoryController::class,'update']);
 Route::post('/settings',[SettingsController::class,'update']);

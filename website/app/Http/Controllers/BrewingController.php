@@ -6,19 +6,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class BrewingController extends Controller
 {
-    public function dashboard()
-    {
-        Log::info('Session Data', session()->all());
-        if(!session()->has('resetPerformed')) {
-            session(['resetPerformed' => true]);
-            session()->flash('status', 'Brewery has been reset.');
-        }
-        return view('home');
-    }
     public function startBrewing()
     {
         return response()->json(['message' => 'Brewing process started successfully!']);
