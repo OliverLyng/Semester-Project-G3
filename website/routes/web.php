@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ReportController;
 
 
 
@@ -32,6 +33,7 @@ Route::view('/settings', 'settings')->name('settings');
 
 // For reports category
 
-use App\Http\Controllers\ReportController;
 Route::get('/api/batches/{id}', [ReportController::class, 'getBatchReport']);
 Route::get('/report/pdf/{id}', [ReportController::class, 'generateBatchReport'])->name('report.pdf');
+// Define a route to display the reports page
+Route::get('/reports', [ReportController::class, 'showReports'])->name('reports.show');

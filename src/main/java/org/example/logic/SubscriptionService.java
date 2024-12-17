@@ -62,7 +62,7 @@ public class SubscriptionService {
         return items.get(0); // Assuming one node subscription
 
     }
-//    public void unsubscribeNode(UaMonitoredItem monitoredItem, UaSubscription subscription) throws ExecutionException, InterruptedException {
+    //    public void unsubscribeNode(UaMonitoredItem monitoredItem, UaSubscription subscription) throws ExecutionException, InterruptedException {
 //        subscription.deleteMonitoredItems(List.of(monitoredItem)).get();
 //        if (subscription.getMonitoredItems().isEmpty()) {
 //            client.getSubscriptionManager().deleteSubscription(subscription.getSubscriptionId()).get();
