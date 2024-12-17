@@ -39,6 +39,18 @@ class ReportController extends Controller
         $timestamp = $batch->created_at->format('F d, Y h: i A');
     }
 
+    public function generateReport($id)
+    {
+                    // Example data (replace this with actual database query)
+        $batch = ReportModel::find($id);
+
+        // Generate the PDF
+        $pdf = Pdf::loadView('pdf.batch-report', compact('batch'));
+
+        // Return the PDF for download
+        return $pdf->download('batch_report_' . $id . '.pdf');
+    }
+
     // Generate the PDF
     public
     function insertData(Request $request)

@@ -56,12 +56,8 @@
             <td>{{ $batch['defectiveProduce'] }}</td>
         </tr>
         <tr>
-            <td>Batch ID</td>
-            <td>{{ $batch['batchID'] }}</td>
-        </tr>
-        <tr>
             <td>Date</td>
-            <td>{{ $batch['timestamps'] }}</td>
+            <td>{{ $batch['created_at'] }}</td>
         </tr>
     </table>
 </body>

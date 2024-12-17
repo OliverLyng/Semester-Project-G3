@@ -34,6 +34,6 @@ Route::view('/settings', 'settings')->name('settings');
 // For reports category
 
 Route::get('/api/batches/{id}', [ReportController::class, 'getBatchReport']);
-Route::get('/report/pdf/{id}', [ReportController::class, 'generateBatchReport'])->name('report.pdf');
+Route::get('/report/pdf/{id}', [ReportController::class, 'generateReport'])->name('report.pdf');
 // Define a route to display the reports page
 Route::get('/reports', [ReportController::class, 'showReports'])->name('reports.show');
