@@ -80,7 +80,6 @@ public class BrewingController {
                                     produced,
                                     nodeRepository.readNodeValue(Nodes.prodDefectiveCount).getValue().getValue().toString(),
                                     beer);
-                            resetBrewery();
                         }
 
 
@@ -115,8 +114,8 @@ public class BrewingController {
     }
 
     // Stand-in for setting settings
-    @PostMapping("/reset")
-    public ResponseEntity<String> resetBrewery() throws Exception {
+    @PostMapping(value = "/reset", consumes = "application/json")
+    public ResponseEntity<String> resetBrewery(@RequestBody(required = false) Map<String, Object> payload) throws Exception {
         connection = OPCUAServerConnection.getInstance(endpointUrl);
         client = connection.getClient();
         if (client != null && connection.isConnected()) {

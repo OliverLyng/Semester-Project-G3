@@ -23,4 +23,13 @@ class BrewingController extends Controller
     {
         return response()->json(['message' => 'Brewing process stopped successfully!']);
     }
+    public function dashboard()
+    {
+        Log::info('Session Data', session()->all());
+        if(!session()->has('resetPerformed')) {
+            session(['resetPerformed' => true]);
+            session()->flash('status', 'Brewery has been reset.');
+        }
+        return view('home');
+    }
 }
