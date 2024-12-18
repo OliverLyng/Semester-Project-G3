@@ -6,14 +6,11 @@ public class EndpointUrl {
     private static String selectedEndpointMachine = "192.168.0.122";
     private static String selectedEndpointSimulation = "localhost";
 
-
     public static String getEndpointUrl() {
         return endpointUrl;
-        //return endpointUrlRealMachine;
-
     }
+
     public static String getSelectedEndpoint() {
         return selectedEndpointSimulation;
-        //return selectedEndpointMachine;
     }
 }
