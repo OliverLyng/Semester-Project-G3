@@ -63,12 +63,12 @@
 
         // Valid speed ranges for each beer type
         const validRanges = {
-            Pilsner: {min: 0, max: 600},
-            Wheat: {min: 0, max: 300},
-            IPA: {min: 0, max: 150},
-            Stout: {min: 0, max: 200},
-            Ale: {min: 0, max: 100},
-            AlcoholFree: {min: 0, max: 125},
+            Pilsner: {min: 0, max: 500},
+            Wheat: {min: 0, max: 60},
+            IPA: {min: 0, max: 105},
+            Stout: {min: 0, max: 180},
+            Ale: {min: 0, max: 75},
+            AlcoholFree: {min: 0, max: 40},
         };
 
         validateButton.addEventListener("click", () => {
