@@ -10,12 +10,12 @@ document.addEventListener("DOMContentLoaded", function () {
         // Automatically call the reset function on page load
         const resetButton = document.getElementById("resetButton");
         handleButtonClick(resetButton, "http://localhost:8080/api/reset", "Ready to brew", "status-ready");
-    }
-    else {
+    } else {
         // Initial connection message
         updateStatusMessage("Go to settings to choose beer-type, amount and speed ", "status-connecting");
     }
 });
+
 function updateStatusMessage(text, statusClass) {
     const statusMessageText = document.getElementById("statusMessageText");
     const brewingStatus = document.getElementById("brewingStatus");
@@ -60,19 +60,18 @@ document.getElementById("stopButton").addEventListener("click", function () {
 const evtSource = new EventSource('http://127.0.0.1:8080/api/brew-status-stream');
 
 
-// Handle any errors that occur
 evtSource.onerror = function (event) {
     console.error("EventSource failed:", event);
     evtSource.close(); // Close the connection if errors occur
 };
 
-// Optionally handle specific named events if your server sends them
 evtSource.addEventListener('produced', function (event) {
     const data = JSON.parse(event.data); // Assuming JSON data is sent
     console.log("Produced amount:", data);
     document.getElementById('batchReportProduced').innerHTML = "Produced: " + data + " Bottles";
 
 });
+
 evtSource.addEventListener('temperature', function (event) {
     const data = JSON.parse(event.data);
     console.log("Temperature amount:", data);
@@ -100,39 +99,66 @@ evtSource.addEventListener('state', function (event) {
 });
 
 // Ingredients ******************
-
+let yeastFlag = true;
+let hopsFlag = true;
+let barleyFlag = true;
+let maltFlag = true;
+let wheatFlag = true;
 evtSource.addEventListener('hops', function (event) {
     const data = JSON.parse(event.data);
     console.log("Humidity amount:", data);
-    percent = (data/35000) * 100
+    let percent = (data / 35000) * 100;
     document.getElementById('hops').innerHTML = percent.toFixed(2) + "%";
 
+    if (percent < 80 && hopsFlag) {
+        hopsFlag = lowStocks(percent, 'hops');
+    }
 });
 evtSource.addEventListener('barley', function (event) {
     const data = JSON.parse(event.data);
     console.log("Humidity amount:", data);
-    percent = (data/35000) * 100
+    let percent = (data / 35000) * 100;
     document.getElementById('barley').innerHTML = percent.toFixed(2) + "%";
 
+    if (percent < 80 && barleyFlag) {
+        barleyFlag = lowStocks(percent, 'barley');
+    }
 });
 evtSource.addEventListener('wheat', function (event) {
     const data = JSON.parse(event.data);
     console.log("Humidity amount:", data);
-    percent = (data/35000) * 100
+    let percent = (data / 35000) * 100;
     document.getElementById('wheat').innerHTML = percent.toFixed(2) + "%";
 
+    if (percent < 80 && wheatFlag) {
+        wheatFlag = lowStocks(percent, 'wheat');
+    }
 });
 evtSource.addEventListener('malt', function (event) {
     const data = JSON.parse(event.data);
     console.log("Humidity amount:", data);
-    percent = (data/35000) * 100
+    let percent = (data / 35000) * 100;
     document.getElementById('malt').innerHTML = percent.toFixed(2) + "%";
+
+    if (percent < 80 && maltFlag) {
+        maltFlag = lowStocks(percent, 'malt');
+    }
 
 });
 evtSource.addEventListener('yeast', function (event) {
     const data = JSON.parse(event.data);
     console.log("Humidity amount:", data);
-    percent = (data/35000) * 100
+    let percent = (data / 35000) * 100;
     document.getElementById('yeast').innerHTML = percent.toFixed(2) + "%";
 
+    if (percent < 80 && yeastFlag) {
+        yeastFlag = lowStocks(percent, 'yeast');
+    }
+
 });
+
+function lowStocks(percent, ingredient) {
+    console.log("Low stock alert triggered for", ingredient, "with", percent.toFixed(2), "% remaining.");
+    alert("Warning: low stock on " + ingredient + " " + percent.toFixed(2) +"% left!");
+    return false;
+}

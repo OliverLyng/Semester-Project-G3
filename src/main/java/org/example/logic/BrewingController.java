@@ -90,19 +90,6 @@ public class BrewingController {
                     logger.info("New value received for Current State: {}", dataValue);
                 });
 
-//                STATES states = operations.checkStatus();
-//                if (states.equals(STATES.STOPPED)) {
-//                    operations.handleStoppedStatus(states);
-//                    Thread.sleep(1500);
-//                    operations.reset();
-//                    Thread.sleep(1500);
-//                    operations.start();
-//                }
-//                if (states.equals(STATES.EXECUTE)) {
-//                    System.out.println("Brewing process has been started!");
-//                    return ResponseEntity.ok("Brewing process started successfully!");
-//                }
-
             } catch (Exception e) {
                 System.err.println("Error during brewing start: " + e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error starting brewing process: " + e.getMessage());
@@ -123,29 +110,6 @@ public class BrewingController {
                 nodeRepository = new NodeRepository(client);
                 subscriptionService = new SubscriptionService(client);
                 operations = new Operations(client);
-
-//
-//                // Subscribe to changes on status
-//                subscriptionService.subscribeToNode(Nodes.stateCurrent, dataValue -> {
-//                    //System.out.println("New value received for Current State: " + dataValue);
-//                    logger.info("New value received for Current State: {}", dataValue);
-//                });
-//                // Subscribe to changes on produced items
-//                subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
-//                    //System.out.println("New value received for Produced Items: " + dataValue);
-//                    logger.info("New value received for Produced Items: {}", dataValue);
-//                });
-//                subscriptionService.subscribeToNode(Nodes.statusRelativeHumidity, dataValue -> {
-//                    //System.out.println("New value received for Current State: " + dataValue);
-//                    logger.info("New value received for Current State: {}", dataValue);
-//                });
-//                // Subscribe to changes on produced items
-//                subscriptionService.subscribeToNode(Nodes.statusTemperature, dataValue -> {
-//                    //System.out.println("New value received for Produced Items: " + dataValue);
-//                    logger.info("New value received for Produced Items: {}", dataValue);
-//                });
-//
-
                 operations.reset();
                 return ResponseEntity.ok("Ready to brew!!");
             } catch (Exception e) {
@@ -234,7 +198,6 @@ public class BrewingController {
     @GetMapping("/brew-status-stream")
     public SseEmitter streamBrewStatus() throws ExecutionException, InterruptedException {
         final SseEmitter emitter = new SseEmitter(0L);
-        // Assuming you have a service to handle subscription
         subscriptionService.subscribeToNode(Nodes.produced, dataValue -> {
             try {
                 emitter.send(SseEmitter.event().name("produced").data(dataValue.getValue().getValue().toString()));
